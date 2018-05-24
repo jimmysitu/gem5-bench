@@ -24,7 +24,7 @@ endif
 
 # Build SPEC2006 for gem5
 $(BUILD_SPECs): check-env
-	cp ${PWD}/spec2006_configs/gem5-$(subst SPEC2006_,,$@).cfg ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).bld.cfg; \
+	cp ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).cfg ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).bld.cfg; \
 	cd ${M5_CPU2006}; \
 	. ./shrc; \
 	runspec --action=build --tuning=base --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).bld.cfg int; \
@@ -45,6 +45,7 @@ $(CLEAN_SPECs): check-env
 	. ./shrc; \
 	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst CLEAN_SPEC2006_,,$@).bld.cfg int; \
 	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst CLEAN_SPEC2006_,,$@).bld.cfg fp; \
+	rm ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).bld.cfg; \
 	echo "$(@) clean done"
 
 # Build gem5
