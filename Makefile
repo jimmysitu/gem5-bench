@@ -7,14 +7,14 @@ ISAs := X86 ARM RISCV
 exts := opt prof perf debug  
 
 BUILD_SPECs = $(foreach ISA, $(ISAs), BUILD_SPEC2006_$(ISA))
+SETUP_SPECs = $(foreach ISA, $(ISAs), SETUP_SPEC2006_$(ISA))
 RUN_SPECs = $(foreach ISA, $(ISAs), RUN_SPEC2006_$(ISA))
 CLEAN_SPECs = $(foreach ISA, $(ISAs), CLEAN_SPEC2006_$(ISA))
 
 GEM5_TARGETs = $(foreach ISA, $(ISAs), $(foreach ext, $(exts),  gem5/build/$(ISA)/gem5.$(ext)))
 
 
-
-.PHONY: check-env $(BUILD_SPECs) $(RUN_SPECs) $(CLEAN_SPECs)
+.PHONY: check-env $(BUILD_SPECs) $(SETUP_SPECs) $(RUN_SPECs) $(CLEAN_SPECs)
 
 # Check M5_CPU2006, it should point to SPEC2006 install dir
 check-env:
@@ -31,7 +31,16 @@ $(BUILD_SPECs): check-env
 	runspec --action=build --tuning=base --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).bld.cfg fp; \
 	echo "$(@) build done"
 
-# Try run on native before gem5 simulation
+# Setup the run dir before gem5 simulation
+$(SETUP_SPECs): check-env
+	cp ${PWD}/spec2006_configs/gem5-$(subst SETUP_SPEC2006_,,$@).cfg ${PWD}/spec2006_configs/gem5-$(subst SETUP_SPEC2006_,,$@).bld.cfg; \
+	cd ${M5_CPU2006}; \
+	. ./shrc; \
+	runspec --action=setup --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst SETUP_SPEC2006_,,$@).bld.cfg int; \
+	runspec --action=setup --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst SETUP_SPEC2006_,,$@).bld.cfg fp; \
+	echo "$(@) run done"
+
+# Try run on native machine before gem5 simulation
 $(RUN_SPECs): check-env
 	cd ${M5_CPU2006}; \
 	. ./shrc; \
@@ -45,7 +54,7 @@ $(CLEAN_SPECs): check-env
 	. ./shrc; \
 	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst CLEAN_SPEC2006_,,$@).bld.cfg int; \
 	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst CLEAN_SPEC2006_,,$@).bld.cfg fp; \
-	rm ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).bld.cfg; \
+	rm ${PWD}/spec2006_configs/gem5-$(subst CLEAN_SPEC2006_,,$@).bld.cfg; \
 	echo "$(@) clean done"
 
 # Build gem5
