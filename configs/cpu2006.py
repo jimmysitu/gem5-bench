@@ -147,20 +147,20 @@ class perlbench(DefaultBenchmark):
 
     opts['test'] = {}
 
-    def com(self, isa, size, wrkld):
-        if wrkld in self.opts[size].keys():
-            self.args = self.opts[size][wrkld]
+    def com(self, isa, sz, wrkld):
+        if wrkld in self.opts[sz].keys():
+            self.args = self.opts[sz][wrkld]
         elif 'all' == wrkld:
-            for wl in self.opts[size].keys():
-                self.args = self.args + [self.opts[size][wl]]
+            for wl in self.opts[sz].keys():
+                self.args = self.args + [self.opts[sz][wl]]
         else:
             raise AttributeError, "No workload %s found" % wrkld
 
     def ref(self, isa, wrkld):
-        com(self, isa, 'ref', wrkld)
+        self.com(isa, 'ref', wrkld)
 
     def test(self, isa, wrkld):
-        com(self, isa, 'test', wrkld)
+        self.com(isa, 'test', wrkld)
 
 
 
