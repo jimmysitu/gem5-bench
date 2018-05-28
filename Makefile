@@ -4,7 +4,7 @@ ISO_URL  = 'http://releases.ubuntu.com/xenial'
 ISO_NAME = 'ubuntu-16.04.4-server-amd64.iso'
 
 ISAs := X86 ARM RISCV
-exts := opt prof perf debug  
+exts := opt prof perf debug
 
 BUILD_SPECs = $(foreach ISA, $(ISAs), BUILD_SPEC2006_$(ISA))
 SETUP_SPECs = $(foreach ISA, $(ISAs), SETUP_SPEC2006_$(ISA))
