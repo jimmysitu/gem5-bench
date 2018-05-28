@@ -14,13 +14,24 @@ CLEAN_SPECs = $(foreach ISA, $(ISAs), CLEAN_SPEC2006_$(ISA))
 GEM5_TARGETs = $(foreach ISA, $(ISAs), $(foreach ext, $(exts),  gem5/build/$(ISA)/gem5.$(ext)))
 
 
-.PHONY: check-env $(BUILD_SPECs) $(SETUP_SPECs) $(RUN_SPECs) $(CLEAN_SPECs)
+.PHONY: check-env check-isa check-wrkld $(BUILD_SPECs) $(SETUP_SPECs) $(RUN_SPECs) $(CLEAN_SPECs)
 
 # Check M5_CPU2006, it should point to SPEC2006 install dir
 check-env:
 ifndef M5_CPU2006
 	$(error M5_CPU2006 is undefined)
 endif
+
+check-isa:
+ifndef ISA 
+	$(error ISA is undefined)
+endif
+
+check-wrkld:
+ifndef WRKLD 
+	$(error WRKLD is undefined)
+endif
+
 
 # Build SPEC2006 for gem5
 $(BUILD_SPECs): check-env
@@ -70,6 +81,10 @@ build_gem5_all: $(GEM5_TARGETs)
 build_img:
 	echo "TODO"
 
-
+# TODO: Long run for this simulation, slurm should be used
 # SE Mode
+perlbench: check-isa check-wrkld 
+	./gem5/build/$(ISA)/gem5.opt configs/se_cpu2006.py --bench=perlbench --spec-workload=$(WRKLD)
+
+
 

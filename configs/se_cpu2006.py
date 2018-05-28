@@ -128,7 +128,7 @@ Options.addCommonOptions(parser)
 Options.addSEOptions(parser)
 
 # SPEC2006 options
-parser.add_option("--spec-workload", default="all",
+parser.add_option("--spec-workload", default='',
             help="Input workload for SPEC CPU2006 benchmarks.")
 parser.add_option("--spec-cwd", default=os.getcwd() + '/m5out',
             help="Input workload for SPEC CPU2006 benchmarks.")

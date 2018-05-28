@@ -42,6 +42,8 @@ class Benchmark(object):
 
         if not hasattr(self.__class__, 'binary'):
             self.binary = self.name + '_base.gem5-' + isa
+        else:
+            self.binary = self.__class__.binary + '_base.gem5-' + isa
 
         if not hasattr(self.__class__, 'args'):
             self.args = []
@@ -72,14 +74,10 @@ class Benchmark(object):
 
 
         if not hasattr(self.__class__, 'stdin'):
-            self.stdin = joinpath(self.run_dir, '%s.in' % self.name)
-            if not isfile(self.stdin):
-                self.stdin = None
+            self.stdin = []
 
         if not hasattr(self.__class__, 'stdout'):
-            self.stdout = joinpath(self.run_dir, '%s.out' % self.name)
-            if not isfile(self.stdout):
-                self.stdout = None
+            self.stdout = []
 
         func(self, isa, workload)
 
@@ -123,29 +121,9 @@ class Benchmark(object):
         return self.name
 
 class DefaultBenchmark(Benchmark):
-    def ref(self, isa, workload): pass
-    def test(self, isa, workload): pass
-    def train(self, isa, workload): pass
 
-class perlbench(DefaultBenchmark):
-    name = 'perlbench'
-    number = 400
-    opts = {}
-    opts['ref'] = {}
-    opts['ref']['checkspam'] = [
-            '-I./lib', 'checkspam.pl',
-            '2500', '5', '25', '11', '150', '1', '1', '1', '1'
-            ]
-    opts['ref']['diffmail'] = [
-            '-I./lib', 'diffmail.pl',
-            '4', '800', '10', '17', '19', '300'
-            ]
-    opts['ref']['splitmail'] = [
-            '-I./lib splitmail.pl',
-            '1600', '12', '26', '16', '4500'
-            ]
-
-    opts['test'] = {}
+    def __init__(self, isa, os, size, workload):
+        Benchmark.__init__(self, isa, os, size, workload)
 
     def com(self, isa, sz, wrkld):
         if wrkld in self.opts[sz].keys():
@@ -154,7 +132,17 @@ class perlbench(DefaultBenchmark):
             for wl in self.opts[sz].keys():
                 self.args = self.args + [self.opts[sz][wl]]
         else:
-            raise AttributeError, "No workload %s found" % wrkld
+            print("No workload args for %s" % wrkld)
+            pass
+
+        if wrkld in self.inputs[sz].keys():
+            self.stdin = self.inputs[sz][wrkld]
+        elif 'all' == wrkld:
+            for wl in self.inputs[sz].keys():
+                self.stdin = self.stdin + [self.inputs[sz][wl]]
+        else:
+            print("No workload stdin for %s" % wrkld)
+            pass
 
     def ref(self, isa, wrkld):
         self.com(isa, 'ref', wrkld)
@@ -163,23 +151,540 @@ class perlbench(DefaultBenchmark):
         self.com(isa, 'test', wrkld)
 
 
+# opts can be found by command `specinvoke -n` in run dir
+class perlbench(DefaultBenchmark):
+    name = 'perlbench'
+    number = 400
 
-cpu2006int = [ perlbench ]
-#cpu2006int = [
-#        perlbench, bzip2, gcc, mcf,
-#        gobmk, hmmer, sjeng, libquantum,
-#        h264ref, omnetpp, astar, xalancbmk,
-#        specrand_int
-#    ]
-#
-cpu2006fp = []
-#cpu2006fp = [
-#        bwaves, gamess, milc, zeusmp,
-#        gromacs, cactusADM, leslie3d, namd,
-#        dealII, soplex, povray, calculix,
-#        GemsFDTD, tonto, lbm, wrf,
-#        sphinx3, specrand_fp
-#    ]
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['checkspam'] = [
+                    '-I./lib', 'checkspam.pl',
+                    '2500', '5', '25', '11', '150', '1', '1', '1', '1'
+                    ]
+        self.opts['ref']['diffmail'] = [
+                    '-I./lib', 'diffmail.pl',
+                    '4', '800', '10', '17', '19', '300'
+                    ]
+        self.opts['ref']['splitmail'] = [
+                    '-I./lib splitmail.pl',
+                    '1600', '12', '26', '16', '4500'
+                    ]
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+
+class bzip2(DefaultBenchmark):
+    name = 'bzip2'
+    number = 401
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['source'] = ['input.source', '280']
+        self.opts['ref']['chicken'] = ['chicken.jpg', '30']
+        self.opts['ref']['liberty'] = ['liberty.jpg', '30']
+        self.opts['ref']['program'] = ['input.program', '280']
+        self.opts['ref']['text'] = ['text.html', '280']
+        self.opts['ref']['combined'] = ['input.combined', '200']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class gcc(DefaultBenchmark):
+    name = 'gcc'
+    number = 403
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['166'] = ['166.in']
+        self.opts['ref']['200'] = ['200.in']
+        self.opts['ref']['c-typeck'] = ['c-typeck.in']
+        self.opts['ref']['cp-decl'] = ['cp-decl.in']
+        self.opts['ref']['expr'] = ['expr.in']
+        self.opts['ref']['expr2'] = ['expr2.in']
+        self.opts['ref']['g23'] = ['g23.in']
+        self.opts['ref']['s04'] = ['s04.in']
+        self.opts['ref']['scilab'] = ['scilab.in']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class bwaves(DefaultBenchmark):
+    name = 'bwaves'
+    number = 410
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class gamess(DefaultBenchmark):
+    name = 'gamess'
+    number = 416
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.inputs['ref']['cytosine'] = ['cytosine.2.config']
+        self.inputs['ref']['h2ocu2+'] = ['h2ocu2+.gradient.config']
+        self.inputs['ref']['triazolium'] = ['triazolium.config']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class mcf(DefaultBenchmark):
+    name = 'mcf'
+    number = 429
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['inp'] = ['inp.in']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class milc(DefaultBenchmark):
+    name = 'milc'
+    number = 433
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.inputs['ref']['su3imp'] = ['su3imp.in']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class zeusmp(DefaultBenchmark):
+    name = 'zeusmp'
+    number = 434
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class gromacs(DefaultBenchmark):
+    name = 'gromacs'
+    number = 435
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['gromacs'] = ['-silent', '-deffnm', 'gromacs', '-nice', '0']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class cactusADM(DefaultBenchmark):
+    name = 'cactusADM'
+    number = 436
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['benchADM'] = ['benchADM.par']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class leslie3d(DefaultBenchmark):
+    name = 'leslie3d'
+    number = 437
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.inputs['ref']['leslie3d'] = ['leslie3d.in']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class namd(DefaultBenchmark):
+    name = 'namd'
+    number = 444
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['namd'] = ['--input', 'namd.input', '--iterations', '38', '--output', 'namd.out']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class namd(DefaultBenchmark):
+    name = 'namd'
+    number = 444
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['namd'] = ['--input', 'namd.input', '--iterations', '38', '--output', 'namd.out']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class gobmk(DefaultBenchmark):
+    name = 'gobmk'
+    number = 445
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['13x13'] = ['--quiet', '--mode', 'gtp']
+        self.opts['ref']['nngs'] = ['--quiet', '--mode', 'gtp']
+        self.opts['ref']['score2'] = ['--quiet', '--mode', 'gtp']
+        self.opts['ref']['trevorc'] = ['--quiet', '--mode', 'gtp']
+        self.opts['ref']['trevord'] = ['--quiet', '--mode', 'gtp']
+
+        self.inputs['ref']['13x13'] = ['13x13.tst']
+        self.inputs['ref']['nngs'] = ['nngs.tst']
+        self.inputs['ref']['score2'] = ['score2.tst']
+        self.inputs['ref']['trevorc'] = ['trevorc']
+        self.inputs['ref']['trevord'] = ['trevord']
+
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class dealII(DefaultBenchmark):
+    name = 'dealII'
+    number = 447
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['23'] = ['23']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class soplex(DefaultBenchmark):
+    name = 'soplex'
+    number = 450
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['pds-50'] = ['-m4500', 'pds-50.mps']
+        self.opts['ref']['ref'] = ['-m3500', 'ref.mps']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class povray(DefaultBenchmark):
+    name = 'povray'
+    number = 453
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['SPEC-benchmark'] = ['SPEC-benchmark-ref.ini']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class calculix(DefaultBenchmark):
+    name = 'calculix'
+    number = 454
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['hyperviscoplastic'] = ['-i', 'hyperviscoplastic']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class hmmer(DefaultBenchmark):
+    name = 'hmmer'
+    number = 456
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['nph3'] = ['nph3.hmm', 'swiss41']
+        self.opts['ref']['retro'] = ['--fixed', '0', '--mean', '500' '--num', '500000', '--sd', '350', '--seed', '0', 'retro.hmm']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class sjeng(DefaultBenchmark):
+    name = 'sjeng'
+    number = 458
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['ref'] = ['ref.txt']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class GemsFDTD(DefaultBenchmark):
+    name = 'GemsFDTD'
+    number = 459
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class libquantum(DefaultBenchmark):
+    name = 'libquantum'
+    number = 462
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['ref'] = ['1397','8']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class h264ref(DefaultBenchmark):
+    name = 'h264ref'
+    number = 464
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['forman_baseline'] = ['-d','foreman_ref_encoder_baseline.cfg']
+        self.opts['ref']['forman_main'] = ['-d','foreman_ref_encoder_baseline.cfg']
+        self.opts['ref']['sss_main'] = ['-d','sss_encoder_main.cfg']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class tonto(DefaultBenchmark):
+    name = 'tonto'
+    number = 465
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class lbm(DefaultBenchmark):
+    name = 'lbm'
+    number = 470
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['reference'] = ['3000', 'reference.dat', '0', '0', '100_100_130_ldc.of']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class omnetpp(DefaultBenchmark):
+    name = 'omnetpp'
+    number = 471
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['omnetpp'] = ['omnetpp.ini']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class astar(DefaultBenchmark):
+    name = 'astar'
+    number = 473
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['rivers'] = ['rivers.cfg']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class wrf(DefaultBenchmark):
+    name = 'wrf'
+    number = 481
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class sphinx3(DefaultBenchmark):
+    name = 'sphinx3'
+    binary = 'sphinx_livepretend'
+    number = 482
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['an4'] = ['ctlfile' '.' 'args.an4']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class xalancbmk(DefaultBenchmark):
+    name = 'xalancbmk'
+    binary = 'Xalan'
+    number = 483
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['t5'] = ['t5.xml' 'xalanc.xsl']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+
+class specrand_int(DefaultBenchmark):
+    name = 'specrand'
+    number = 998
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['ref'] = ['1255432124', '234923']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+class specrand_fp(DefaultBenchmark):
+    name = 'specrand'
+    number = 999
+
+    def __init__(self, isa, os, size, workload):
+        self.opts = {}
+        self.opts['ref'] = {}
+        self.opts['test'] = {}
+        self.inputs = {}
+        self.inputs['ref'] = {}
+        self.inputs['test'] = {}
+
+        self.opts['ref']['ref'] = ['1255432124', '234923']
+        DefaultBenchmark.__init__(self, isa, os, size, workload)
+
+cpu2006int = [
+        perlbench, bzip2, gcc, mcf,
+        gobmk, hmmer, sjeng, libquantum,
+        h264ref, omnetpp, astar, xalancbmk,
+        specrand_int
+    ]
+
+cpu2006fp = [
+        bwaves, gamess, milc, zeusmp,
+        gromacs, cactusADM, leslie3d, namd,
+        dealII, soplex, povray, calculix,
+        GemsFDTD, tonto, lbm, wrf,
+        sphinx3, specrand_fp
+    ]
 
 all = cpu2006int + cpu2006fp
 
@@ -194,3 +699,14 @@ if __name__ == '__main__':
             print('%s: %s' % (x, size))
             pprint(x.makeProcessArgs())
             print()
+
+#    size = 'ref'
+#    x = perlbench('x86', 'linux', size, 'all')
+#    print('%s: %s' % (x, size))
+#    pprint(x.makeProcessArgs())
+#    print()
+#
+#    x = bzip2('x86', 'linux', size, 'all')
+#    print('%s: %s' % (x, size))
+#    pprint(x.makeProcessArgs())
+#    print()
