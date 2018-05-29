@@ -356,21 +356,6 @@ class namd(DefaultBenchmark):
         self.opts['ref']['namd'] = ['--input', 'namd.input', '--iterations', '38', '--output', 'namd.out']
         DefaultBenchmark.__init__(self, isa, os, size, workload)
 
-class namd(DefaultBenchmark):
-    name = 'namd'
-    number = 444
-
-    def __init__(self, isa, os, size, workload):
-        self.opts = {}
-        self.opts['ref'] = {}
-        self.opts['test'] = {}
-        self.inputs = {}
-        self.inputs['ref'] = {}
-        self.inputs['test'] = {}
-
-        self.opts['ref']['namd'] = ['--input', 'namd.input', '--iterations', '38', '--output', 'namd.out']
-        DefaultBenchmark.__init__(self, isa, os, size, workload)
-
 class gobmk(DefaultBenchmark):
     name = 'gobmk'
     number = 445
@@ -409,7 +394,7 @@ class dealII(DefaultBenchmark):
         self.inputs['ref'] = {}
         self.inputs['test'] = {}
 
-        self.opts['ref']['23'] = ['23']
+        self.opts['ref']['ref'] = ['23']
         DefaultBenchmark.__init__(self, isa, os, size, workload)
 
 class soplex(DefaultBenchmark):
@@ -515,7 +500,7 @@ class libquantum(DefaultBenchmark):
         self.inputs['ref'] = {}
         self.inputs['test'] = {}
 
-        self.opts['ref']['ref'] = ['1397','8']
+        self.opts['ref']['ref'] = ['1397', '8']
         DefaultBenchmark.__init__(self, isa, os, size, workload)
 
 class h264ref(DefaultBenchmark):
@@ -696,7 +681,7 @@ if __name__ == '__main__':
         for size in ['ref']:
             print('class: %s' % bench.__name__)
             x = bench('x86', 'linux', size, 'all')
-            print('%s: %s' % (x, size))
+            print('%s workloads: %s' % (x, list(set(x.opts[size].keys()+x.opts[size].keys()))))
             pprint(x.makeProcessArgs())
             print()
 
