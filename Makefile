@@ -29,9 +29,11 @@ endif
 
 check-wrkld:
 ifndef WRKLD 
-	$(error WRKLD is undefined)
+	$(error WRKLD is undefined, try list-wrkld)
 endif
 
+list-wrkld:
+	python2 configs/cpu2006.py | grep workloads
 
 # Build SPEC2006 for gem5
 $(BUILD_SPECs): check-env
@@ -83,8 +85,11 @@ build_img:
 
 # TODO: Long run for this simulation, slurm should be used
 # SE Mode
-perlbench: check-isa check-wrkld 
-	./gem5/build/$(ISA)/gem5.opt configs/se_cpu2006.py --bench=perlbench --spec-workload=$(WRKLD)
+BENCHs = perlbench bzip2 gcc bwaves gamess mcf milc zeusmp gromacs cactusADM leslie3d namd gobmk dealII soplex povray calculix hmmer sjeng GemsFDTD libquantum h264ref tonto lbm omnetpp astar wrf sphinx3 xalancbmk specrand_int specrand_fp
+
+$(BENCHs): check-isa check-wrkld 
+	./gem5/build/$(ISA)/gem5.opt configs/se_cpu2006.py --mem-size="2048MB" --bench=$@ --spec-workload=$(WRKLD)
+
 
 
 
