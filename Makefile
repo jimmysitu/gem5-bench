@@ -6,12 +6,13 @@ ISO_NAME = 'ubuntu-16.04.4-server-amd64.iso'
 ISAs := X86 ARM RISCV
 exts := opt prof perf debug
 
-BUILD_SPECs = $(foreach ISA, $(ISAs), BUILD_SPEC2006_$(ISA))
-SETUP_SPECs = $(foreach ISA, $(ISAs), SETUP_SPEC2006_$(ISA))
-RUN_SPECs = $(foreach ISA, $(ISAs), RUN_SPEC2006_$(ISA))
-CLEAN_SPECs = $(foreach ISA, $(ISAs), CLEAN_SPEC2006_$(ISA))
+BUILD_SPECs = $(foreach ISA, $(ISAs), build_spec2006_$(ISA))
+SETUP_SPECs = $(foreach ISA, $(ISAs), setup_spec2006_$(ISA))
+RUN_SPECs = $(foreach ISA, $(ISAs), run_spec2006_$(ISA))
+CLEAN_SPECs = $(foreach ISA, $(ISAs), clean_spec2006_$(ISA))
 
 GEM5_TARGETs = $(foreach ISA, $(ISAs), $(foreach ext, $(exts),  gem5/build/$(ISA)/gem5.$(ext)))
+KERNEL_TARGETs = $(foreach ISA, $(ISAs), build_kernel_$(ISA))
 
 
 .PHONY: check-env check-isa check-wrkld $(BUILD_SPECs) $(SETUP_SPECs) $(RUN_SPECs) $(CLEAN_SPECs)
@@ -37,51 +38,47 @@ list-wrkld:
 
 # Build SPEC2006 for gem5
 $(BUILD_SPECs): check-env
-	cp ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).cfg ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).bld.cfg; \
+	cp ${PWD}/spec2006_configs/gem5-$(subst build_spec2006_,,$@).cfg ${PWD}/spec2006_configs/gem5-$(subst build_spec2006_,,$@).bld.cfg; \
 	cd ${M5_CPU2006}; \
 	. ./shrc; \
-	runspec --action=build --tuning=base --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).bld.cfg int; \
-	runspec --action=build --tuning=base --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst BUILD_SPEC2006_,,$@).bld.cfg fp; \
-	echo "$(@) build done"
+	runspec --action=build --tuning=base --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst build_spec2006_,,$@).bld.cfg int; \
+	runspec --action=build --tuning=base --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst build_spec2006_,,$@).bld.cfg fp; \
+	@echo "$(@) build done"
 
 # Setup the run dir before gem5 simulation
 $(SETUP_SPECs): check-env
-	cp ${PWD}/spec2006_configs/gem5-$(subst SETUP_SPEC2006_,,$@).cfg ${PWD}/spec2006_configs/gem5-$(subst SETUP_SPEC2006_,,$@).bld.cfg; \
+	cp ${PWD}/spec2006_configs/gem5-$(subst setup_spec2006_,,$@).cfg ${PWD}/spec2006_configs/gem5-$(subst setup_spec2006_,,$@).bld.cfg; \
 	cd ${M5_CPU2006}; \
 	. ./shrc; \
-	runspec --action=setup --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst SETUP_SPEC2006_,,$@).bld.cfg int; \
-	runspec --action=setup --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst SETUP_SPEC2006_,,$@).bld.cfg fp; \
-	echo "$(@) run done"
+	runspec --action=setup --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst setup_spec2006_,,$@).bld.cfg int; \
+	runspec --action=setup --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst setup_spec2006_,,$@).bld.cfg fp; \
+	@echo "$(@) done"
 
 # Try run on native machine before gem5 simulation
 $(RUN_SPECs): check-env
 	cd ${M5_CPU2006}; \
 	. ./shrc; \
-	runspec --action=run --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst RUN_SPEC2006_,,$@).bld.cfg int; \
-	runspec --action=run --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst RUN_SPEC2006_,,$@).bld.cfg fp; \
-	echo "$(@) run done"
+	runspec --action=run --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst run_spec2006_,,$@).bld.cfg int; \
+	runspec --action=run --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst run_spec2006_,,$@).bld.cfg fp; \
+	@echo "$(@) done"
 
 # Clean SPEC2006 for gem5
 $(CLEAN_SPECs): check-env
 	cd ${M5_CPU2006}; \
 	. ./shrc; \
-	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst CLEAN_SPEC2006_,,$@).bld.cfg int; \
-	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst CLEAN_SPEC2006_,,$@).bld.cfg fp; \
-	rm ${PWD}/spec2006_configs/gem5-$(subst CLEAN_SPEC2006_,,$@).bld.cfg; \
-	echo "$(@) clean done"
+	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst clean_spec2006_,,$@).bld.cfg int; \
+	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst clean_spec2006_,,$@).bld.cfg fp; \
+	rm ${PWD}/spec2006_configs/gem5-$(subst clean_spec2006_,,$@).bld.cfg; \
+	@echo "$(@) done"
 
 # Build gem5
 $(GEM5_TARGETs): gem5/src
 	cd gem5; \
-	scons -j 4 $(subst gem5/,,$@)
+	scons -j `nproc` $(subst gem5/,,$@)
 
 build_gem5_all: $(GEM5_TARGETs)
-	echo "Build All Targets Done"
+	@echo "Build All Targets Done"
 
-
-# Build Full System ISO
-build_img:
-	echo "TODO"
 
 # TODO: Long run for this simulation, slurm should be used
 # SE Mode
@@ -91,5 +88,43 @@ $(BENCHs): check-isa check-wrkld
 	./gem5/build/$(ISA)/gem5.opt configs/se_cpu2006.py --mem-size="2048MB" --bench=$@ --spec-workload=$(WRKLD)
 
 
+# Build linux kernel for gem5
+$(KERNEL_TARGETs):
+	cp linux_configs/config-$(subst build_kernel_,,$@) linux/.config
+	cd linux; make -j `nproc` vmlinux
+	@echo "$(@) done"
 
+# Build Full System disk
+build_img:
+	@echo "TODO: Automatic install ubuntu with qemu"
+
+# Run qemu to check kernel
+run_qemu_x86:
+	qemu-system-x86_64 -nographic -hda ubuntu-1604.X86.img -kernel linux/arch/x86_64/boot/bzImage -append "root=/dev/hda1 console=ttyS0"
+
+# Build util for full system
+build_util_x86:
+	cd gem5/util/m5; \
+	make -f Makefile.x86
+
+build_util_aarch64:
+	cd gem5/util/m5; \
+	make -f Makefile.aarch64
+
+# Install tools to full system disk
+install_tools_x86:
+	sudo kpartx -av ubuntu-1604.X86.img
+	sudo mount /dev/mapper/loop0p1 /mnt
+	sudo cp gem5/util/m5/m5 /mnt/sbin/.
+	sudo cp m5tools/tty-gem5.conf /mnt/etc/init/.
+	sudo umount /mnt
+	sudo kpartx -dv /dev/mapper/loop0p1
+
+mount_img_x86:
+	sudo kpartx -av ubuntu-1604.X86.img
+	sudo mount /dev/mapper/loop0p1 /mnt
+
+umount_img_x86:
+	sudo umount /mnt
+	sudo kpartx -dv /dev/mapper/loop0p1
 

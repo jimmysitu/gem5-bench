@@ -8,7 +8,17 @@ A wrapper for simulation with gem5
 ```bash
 sudo apt install build-essential git m4 scons zlib1g zlib1g-dev libprotobuf-dev protobuf-compiler libprotoc-dev libgoogle-perftools-dev python-dev python
 ```
-- TODO: Add kvm install command here
+Install KVM, following instruction on this [page](https://help.ubuntu.com/community/KVM/Installation)
+
+Install Qemu, for creating gem5 full system image
+```bash
+sudo apt-get install qemu-kvm qemu virt-manager virt-viewer libvirt-bin
+```
+
+Install gcc for ARM if want to build linux kernel for Aarch64
+```
+sudo apt-get install gcc-aarch64-linux-gnu device-tree-compiler
+```
 
 ## Build SPEC2006 for gem5 SE mode
 First, build spec2006 on native machine
@@ -29,6 +39,11 @@ Run benchmark case
 ```bash
 make $(benchname) ISA=$(ISA) WRKLD=$(WORKLOAD)
 ```
+
+## Build Linux Kernel for gem5 Full System Mode
+TODO: need to build a kernel for both qemu and gem5, so we can test it on qemu for software/driver issue, and check it on gem5 for performance/power issue
+
+
 
 ## TODO
 - Add Full system image making flow for x86
