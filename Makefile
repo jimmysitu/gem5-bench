@@ -1,7 +1,7 @@
 # This makefile include most useful target of Gem5
 
-ISO_URL  = 'http://releases.ubuntu.com/xenial'
-ISO_NAME = 'ubuntu-16.04.4-server-amd64.iso'
+ISO_URL  = http://releases.ubuntu.com/xenial
+ISO_NAME = ubuntu-16.04.4-server-amd64.iso
 
 ISAs := X86 ARM RISCV
 exts := opt prof perf debug
@@ -15,7 +15,10 @@ GEM5_TARGETs = $(foreach ISA, $(ISAs), $(foreach ext, $(exts),  gem5/build/$(ISA
 KERNEL_TARGETs = $(foreach ISA, $(ISAs), build_kernel_$(ISA))
 
 
-.PHONY: check-env check-isa check-wrkld $(BUILD_SPECs) $(SETUP_SPECs) $(RUN_SPECs) $(CLEAN_SPECs)
+.PHONY: get-iso check-env check-isa check-wrkld $(BUILD_SPECs) $(SETUP_SPECs) $(RUN_SPECs) $(CLEAN_SPECs)
+
+get-iso:
+	wget $(ISO_URL)/$(ISO_NAME)
 
 # Check M5_CPU2006, it should point to SPEC2006 install dir
 check-env:
@@ -100,7 +103,12 @@ build_img:
 
 # Run qemu to check kernel
 run_qemu_x86:
-	qemu-system-x86_64 -nographic -hda ubuntu-1604.X86.img -kernel linux/arch/x86_64/boot/bzImage -append "root=/dev/hda1 console=ttyS0"
+	qemu-system-x86_64 -nographic -hda ubuntu-1604.X86.img \
+		-m 2048 \
+		-kernel linux/arch/x86_64/boot/bzImage -append "root=/dev/hda1 console=ttyS0"
+
+run_gem5_x86:
+	./gem5/build/X86/gem5.opt configs/run.py
 
 # Build util for full system
 build_util_x86:
