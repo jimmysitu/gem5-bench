@@ -129,17 +129,19 @@ build_util_aarch64:
 # Install tools to full system disk
 install_tools_x86:
 	sudo kpartx -av ubuntu-1604.X86.img
+	@sleep 1
 	sudo mount /dev/mapper/loop0p1 /mnt
 	sudo cp gem5/util/m5/m5 /mnt/sbin/.
 	sudo cp m5tools/tty-gem5.conf /mnt/etc/init/.
 	sudo umount /mnt
-	sudo kpartx -dv /dev/mapper/loop0p1
+	sudo kpartx -dv ubuntu-1604.X86.img
 
 mount_img_x86:
 	sudo kpartx -av ubuntu-1604.X86.img
+	@sleep 1
 	sudo mount /dev/mapper/loop0p1 /mnt
 
 umount_img_x86:
 	sudo umount /mnt
-	sudo kpartx -dv /dev/mapper/loop0p1
+	sudo kpartx -dv ubuntu-1604.X86.img
 
