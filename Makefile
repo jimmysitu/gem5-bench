@@ -94,12 +94,19 @@ $(BENCHs): check-isa check-wrkld
 # Build linux kernel for gem5
 $(KERNEL_TARGETs):
 	cp linux_configs/config-$(subst build_kernel_,,$@) linux/.config
-	cd linux; make -j `nproc` vmlinux
+	cd linux; make -j `nproc`
 	@echo "$(@) done"
 
 # Build Full System disk
-build_img:
-	@echo "TODO: Automatic install ubuntu with qemu"
+build_img_x86:
+	@echo "Automatic install ubuntu to ubuntu-1604.X86.img"
+ifeq (,$(wildcard ./ubuntu-1604.X86.img)) 
+	@echo "Create image file"
+	qemu-img create ubuntu-1604.X86.img 8G
+
+else
+	@echo "Image file ubuntu-1604.X86.img already exist, please remove it manually first"
+endif
 
 # Run qemu to check kernel
 run_qemu_x86:
