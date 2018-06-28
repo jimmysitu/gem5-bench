@@ -46,8 +46,6 @@ Install Ubuntu 16.04 to disk image for gem5 full system mode
 make build_img_x86
 ```
 
-
-
 ## TODO
 - Add Full system image making flow for x86
 - Add Full system image making flow for ARM
