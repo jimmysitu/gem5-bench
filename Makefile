@@ -103,10 +103,25 @@ build_img_x86:
 ifeq (,$(wildcard ./ubuntu-1604.X86.img)) 
 	@echo "Create image file"
 	qemu-img create ubuntu-1604.X86.img 8G
+	sudo virt-install \
+		--connect qemu:///system \
+		--name gem5-ubuntu \
+		--ram 2048 \
+		--network network=default,model=virtio \
+		--disk path=${PWD}/ubuntu-1604.X86.img,size=8,bus=virtio,sparse=false \
+		--location ubuntu-16.04.4-server-amd64.iso \
+		--initrd-inject=${PWD}/linux_configs/preseed-X86.cfg \
+		--extra-args="file=file:/preseed-X86.cfg console=ttyS0" \
+		--virt-type kvm \
+		--noreboot --nographics
 
 else
 	@echo "Image file ubuntu-1604.X86.img already exist, please remove it manually first"
 endif
+
+destroy_img_x86:
+	virsh destroy gem5-ubuntu
+	virsh undefine gem5-ubuntu --remove-all-storage
 
 # Run qemu to check kernel
 run_qemu_x86:

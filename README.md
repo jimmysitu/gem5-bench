@@ -12,7 +12,7 @@ Install KVM, following instruction on this [page](https://help.ubuntu.com/commun
 
 Install Qemu, for creating gem5 full system image
 ```bash
-sudo apt-get install qemu-kvm qemu virt-manager virt-viewer libvirt-bin
+sudo apt-get install qemu-kvm qemu virt-manager virt-viewer libvirt-bin virtinst
 ```
 
 Install gcc for ARM if want to build linux kernel for Aarch64
@@ -41,7 +41,10 @@ make $(benchname) ISA=$(ISA) WRKLD=$(WORKLOAD)
 ```
 
 ## Build Linux Kernel for gem5 Full System Mode
-TODO: need to build a kernel for both qemu and gem5, so we can test it on qemu for software/driver issue, and check it on gem5 for performance/power issue
+Install Ubuntu 16.04 to disk image for gem5 full system mode
+```bash
+make build_img_x86
+```
 
 
 
