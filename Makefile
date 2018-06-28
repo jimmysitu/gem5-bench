@@ -115,7 +115,7 @@ ifeq (,$(wildcard ./ubuntu-1604.X86.img))
 		--extra-args="locale=en_GB.UTF-8 console-setup/ask_detect=false keyboard-configuration/layoutcode=hu console=ttyS0 file=file:/preseed.cfg" \
 		--virt-type kvm \
 		--noreboot \
-		--console
+		--nographics
 
 else
 	@echo "Image file ubuntu-1604.X86.img already exist, please remove it manually first"
