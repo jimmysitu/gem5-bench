@@ -12,7 +12,7 @@ Install KVM, following instruction on this [page](https://help.ubuntu.com/commun
 
 Install Qemu, for creating gem5 full system image
 ```bash
-sudo apt-get install qemu-kvm qemu virt-manager virt-viewer libvirt-bin virtinst
+sudo apt-get install qemu-kvm qemu virt-manager virt-viewer libvirt-bin virtinst kpartx
 ```
 
 Install gcc for ARM if want to build linux kernel for Aarch64

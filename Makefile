@@ -27,12 +27,12 @@ ifndef M5_CPU2006
 endif
 
 check-isa:
-ifndef ISA 
+ifndef ISA
 	$(error ISA is undefined)
 endif
 
 check-wrkld:
-ifndef WRKLD 
+ifndef WRKLD
 	$(error WRKLD is undefined, try list-wrkld)
 endif
 
@@ -112,8 +112,8 @@ ifeq (,$(wildcard ./ubuntu-1604.X86.img))
 		--disk path=${PWD}/ubuntu-1604.X86.img,size=8,bus=virtio,sparse=false,format=raw \
 		--location ubuntu-16.04.4-server-amd64.iso \
 		--initrd-inject=${PWD}/preseed.cfg \
-		--extra-args="locale=en_GB.UTF-8 console-setup/ask_detect=false keyboard-configuration/layoutcode=hu console=ttyS0 file=file:/preseed.cfg" \
-		--virt-type kvm \
+		--extra-args="locale=en_GB.UTF-8 console-setup/ask_detect=false keyboard-configuration/layoutcode=hu console=ttyS0 file=/preseed.cfg" \
+		--virt-type qemu \
 		--noreboot \
 		--nographics
 
