@@ -116,6 +116,7 @@ ifeq (,$(wildcard ./ubuntu-1604.X86.img))
 		--virt-type qemu \
 		--noreboot \
 		--nographics
+	sudo chown `whoami` ubuntu-1604.X86.img
 
 else
 	@echo "Image file ubuntu-1604.X86.img already exist, please remove it manually first"
