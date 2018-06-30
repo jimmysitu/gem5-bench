@@ -150,7 +150,10 @@ install_tools_x86:
 	@sleep 1
 	sudo mount /dev/mapper/loop0p1 /mnt
 	sudo cp gem5/util/m5/m5 /mnt/sbin/.
-	sudo cp m5tools/tty-gem5.conf /mnt/etc/init/.
+	sudo cp m5tools/gem5init /mnt/sbin/.
+	sudo cp m5tools/gem5.service /mnt/lib/systemd/system/.
+	cd /mnt/etc/systemd/system/default.target.wants; \
+		sudo ln -s /lib/systemd/system/gem5.service
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
 
