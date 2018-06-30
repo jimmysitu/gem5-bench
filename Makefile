@@ -162,3 +162,6 @@ umount_img_x86:
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
 
+term:
+	./gem5/util/term/m5term localhost 3456
+
