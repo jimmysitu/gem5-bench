@@ -67,10 +67,10 @@ class Benchmark(object):
                 spec_dist, 'benchspec', 'CPU2006', str(self.number) + '.' + self.name,
                 'run', 'run_base_' + size + '_gem5-' + isa + '.0000')
 
-        executable = joinpath(self.run_dir, self.binary)
-        if not isfile(executable):
-            raise AttributeError, '%s not found' % executable
-        self.executable = executable
+        full_binary = joinpath(self.run_dir, self.binary)
+        if not isfile(full_binary):
+            raise AttributeError, '%s not found' % full_binary
+        self.executable = self.binary
 
 
         if not hasattr(self.__class__, 'stdin'):
@@ -84,8 +84,6 @@ class Benchmark(object):
     def makeProcessArgs(self, **kwargs):
         # set up default args for Process object
         process_args = {}
-        process_args['cmd'] = [ self.executable ] + self.args
-        process_args['executable'] = self.executable
         if self.stdin:
             process_args['input'] = self.stdin
         if self.stdout:
@@ -94,6 +92,11 @@ class Benchmark(object):
             process_args['simpoint'] = self.simpoint
         # explicit keywords override defaults
         process_args.update(kwargs)
+
+        cwd = process_args.get('cwd')
+        process_args['cmd'] = [ joinpath(cwd, self.executable) ] + self.args
+        process_args['executable'] = joinpath(cwd, self.executable)
+
 
         return process_args
 
