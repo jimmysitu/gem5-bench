@@ -49,7 +49,7 @@ class MySystem(LinuxX86System):
         # For x86, there is an I/O gap from 3GB to 4GB.
         # We can have at most 3GB of memory unless we do something special
         # to account for this I/O gap. For simplicity, this is omitted.
-        mem_size = '512MB'
+        mem_size = '2048MB'
         self.mem_ranges = [AddrRange(mem_size),
                            AddrRange(0xC0000000, size=0x100000), # For I/0
                            ]
