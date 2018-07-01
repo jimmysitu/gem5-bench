@@ -45,12 +45,19 @@ Install Ubuntu 16.04 to disk image for gem5 full system mode
 ```bash
 make build_img_x86
 ```
+Build Linux kernel, you can define you kernel in linux_configs/config-<ISA>.cfg
+```bash
+make build_kernel_x86
+```
+Install tools and benchmark to disk image
+```bash
+make install_tools_x86
+```
+
 
 ## TODO
-- Add Full system image making flow for x86
 - Add Full system image making flow for ARM
-- Add install spec2006 flow to system image
 - Add McPAT flow for power analysis
-
+- output redirect not work in SE mode
 
 

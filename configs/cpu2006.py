@@ -94,8 +94,11 @@ class Benchmark(object):
         process_args.update(kwargs)
 
         cwd = process_args.get('cwd')
-        process_args['cmd'] = [ joinpath(cwd, self.executable) ] + self.args
-        process_args['executable'] = joinpath(cwd, self.executable)
+        if not cwd:
+            pass
+        else:
+            process_args['cmd'] = [ joinpath(cwd, self.executable) ] + self.args
+            process_args['executable'] = joinpath(cwd, self.executable)
 
 
         return process_args

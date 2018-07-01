@@ -87,8 +87,10 @@ build_gem5_all: $(GEM5_TARGETs)
 # SE Mode
 BENCHs = perlbench bzip2 gcc bwaves gamess mcf milc zeusmp gromacs cactusADM leslie3d namd gobmk dealII soplex povray calculix hmmer sjeng GemsFDTD libquantum h264ref tonto lbm omnetpp astar wrf sphinx3 xalancbmk specrand_int specrand_fp
 
-$(BENCHs): check-isa check-wrkld 
-	./gem5/build/$(ISA)/gem5.opt configs/se_cpu2006.py --mem-size="2048MB" --bench=$@ --spec-workload=$(WRKLD)
+$(BENCHs): check-isa check-wrkld
+	./gem5/build/$(ISA)/gem5.opt configs/se_cpu2006.py \
+		--mem-size="2048MB" --bench=$@ --spec-workload=$(WRKLD) \
+		--output=$@_$(WRKLD).out --errout=$@_$(WRKLD).err
 
 
 # Build linux kernel for gem5
@@ -133,7 +135,7 @@ run_qemu_x86:
 		-kernel linux/arch/x86_64/boot/bzImage -append "root=/dev/hda1 console=ttyS0"
 
 run_gem5_x86:
-	./gem5/build/X86/gem5.opt configs/run.py
+	./gem5/build/X86/gem5.opt configs/run.py --script=$(CMD)
 
 # Build util for full system
 build_util_x86:
@@ -152,8 +154,9 @@ install_tools_x86:
 	sudo cp gem5/util/m5/m5 /mnt/sbin/.
 	sudo cp m5tools/gem5init /mnt/sbin/.
 	sudo cp m5tools/gem5.service /mnt/lib/systemd/system/.
-	cd /mnt/etc/systemd/system/default.target.wants; \
+	-cd /mnt/etc/systemd/system/default.target.wants; \
 		sudo ln -s /lib/systemd/system/gem5.service
+	sudo cp -r ${M5_CPU2006} /mnt/home/gem5/.
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
 
