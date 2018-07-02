@@ -52,6 +52,7 @@ make build_kernel_x86
 Install tools and benchmark to disk image
 ```bash
 make install_tools_x86
+make install_spec_x86
 ```
 
 

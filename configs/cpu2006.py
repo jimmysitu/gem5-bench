@@ -32,6 +32,7 @@ import os
 import sys
 from os.path import basename, exists, join as joinpath, normpath
 from os.path import isdir, isfile, islink
+from optparse import OptionParser
 
 spec_dist = os.environ.get('M5_CPU2006', '/dist/m5/cpu2006')
 
@@ -682,22 +683,38 @@ all = cpu2006int + cpu2006fp
 __all__ = [ x.__name__ for x in all ]
 
 if __name__ == '__main__':
-    from pprint import pprint
-    for bench in all:
-        for size in ['ref']:
-            print('class: %s' % bench.__name__)
-            x = bench('x86', 'linux', size, 'all')
-            print('%s workloads: %s' % (x, list(set(x.opts[size].keys()+x.opts[size].keys()))))
-            pprint(x.makeProcessArgs())
-            print()
+    parser = OptionParser()
+    parser.add_option("-l", "--list", action="store_true", dest="list", default=False)
+    parser.add_option("-g", "--generate", action="store_true", dest="generate", default=False)
+    (opts, args) = parser.parse_args()
 
-#    size = 'ref'
-#    x = perlbench('x86', 'linux', size, 'all')
-#    print('%s: %s' % (x, size))
-#    pprint(x.makeProcessArgs())
-#    print()
-#
-#    x = bzip2('x86', 'linux', size, 'all')
-#    print('%s: %s' % (x, size))
-#    pprint(x.makeProcessArgs())
-#    print()
+    if opts.list:
+        from pprint import pprint
+        for bench in all:
+            for size in ['ref']:
+                print('class: %s' % bench.__name__)
+                x = bench('x86', 'linux', size, 'all')
+                print('%s %s workloads: %s' % (bench.__name__, size, list(set(x.opts[size].keys()))))
+                pprint(x.makeProcessArgs())
+                print()
+    elif opts.generate:
+        for bench in all:
+            for size in ['ref']:
+                print('class: %s' % bench.__name__)
+                x = bench('x86', 'linux', size, 'all')
+                print('%s %s workloads: %s' % (bench.__name__, size, list(set(x.opts[size].keys()))))
+                wrklds = list(set(x.opts[size].keys()))
+                for wrkld in wrklds:
+                    x = bench('x86', 'linux', size, wrkld)
+                    with open('./m5tools/' + str(x.number) + '.' + ('.'.join([x.name, size, wrkld])) + '.sh', 'w') as f:
+                        print('#!/bin/bash', file=f)
+                        print('cd ${M5_CPU2006}/benchspec/CPU2006/' + str(x.number) + '.' + x.name + '/run/run_base_' + size + '_gem5-x86.0000', file=f)
+                        print('./' + x.executable + ' ' + (' '.join(x.args)) + ' \\', file=f)
+                        print('    ' + '1>' + ('.'.join([x.name, size, wrkld, 'out'])) + ' \\', file=f)
+                        print('    ' + '2>' + ('.'.join([x.name, size, wrkld, 'err'])), file=f)
+                        print('if [-s /sbin/m5]', file=f)
+                        print('then', file=f)
+                        print('    /sbin/m5 writefile ' + ('.'.join([x.name, size, wrkld, 'out'])) + ' ' + ('.'.join([x.name, size, wrkld, 'simout'])), file=f)
+                        print('    /sbin/m5 writefile ' + ('.'.join([x.name, size, wrkld, 'err'])) + ' ' + ('.'.join([x.name, size, wrkld, 'simerr'])), file=f)
+                        print('fi', file=f)
+                    f.close()

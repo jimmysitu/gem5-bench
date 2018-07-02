@@ -59,6 +59,7 @@ if __name__ == "__m5_main__":
 
     # Keep running until we are done.
     print("Running the simulation")
+    # TODO: Add kvm fast forward here
     exit_event = m5.simulate()
     print('Exiting @ tick %i because %s' % (m5.curTick(),
                                             exit_event.getCause()))

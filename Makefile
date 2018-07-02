@@ -37,7 +37,7 @@ ifndef WRKLD
 endif
 
 list-wrkld:
-	python2 configs/cpu2006.py | grep workloads
+	python2 configs/cpu2006.py --list | grep workloads
 
 # Build SPEC2006 for gem5
 $(BUILD_SPECs): check-env
@@ -156,6 +156,13 @@ install_tools_x86:
 	sudo cp m5tools/gem5.service /mnt/lib/systemd/system/.
 	-cd /mnt/etc/systemd/system/default.target.wants; \
 		sudo ln -s /lib/systemd/system/gem5.service
+	sudo umount /mnt
+	sudo kpartx -dv ubuntu-1604.X86.img
+
+install_spce_x86:
+	sudo kpartx -av ubuntu-1604.X86.img
+	@sleep 1
+	sudo mount /dev/mapper/loop0p1 /mnt
 	sudo cp -r ${M5_CPU2006} /mnt/home/gem5/.
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
