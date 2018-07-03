@@ -39,13 +39,16 @@ endif
 list-wrkld:
 	python2 configs/cpu2006.py --list | grep workloads
 
+gen-spec2006-cmd:
+	python2 configs/cpu2006.py --generate
+
 # Build SPEC2006 for gem5
 $(BUILD_SPECs): check-env
 	cp ${PWD}/spec2006_configs/gem5-$(subst build_spec2006_,,$@).cfg ${PWD}/spec2006_configs/gem5-$(subst build_spec2006_,,$@).bld.cfg; \
 	cd ${M5_CPU2006}; \
 	. ./shrc; \
 	runspec --action=build --tuning=base --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst build_spec2006_,,$@).bld.cfg int; \
-	runspec --action=build --tuning=base --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst build_spec2006_,,$@).bld.cfg fp; \
+	runspec --action=build --tuning=base --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst build_spec2006_,,$@).bld.cfg fp;
 	@echo "$(@) build done"
 
 # Setup the run dir before gem5 simulation
@@ -54,7 +57,7 @@ $(SETUP_SPECs): check-env
 	cd ${M5_CPU2006}; \
 	. ./shrc; \
 	runspec --action=setup --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst setup_spec2006_,,$@).bld.cfg int; \
-	runspec --action=setup --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst setup_spec2006_,,$@).bld.cfg fp; \
+	runspec --action=setup --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst setup_spec2006_,,$@).bld.cfg fp; 
 	@echo "$(@) done"
 
 # Try run on native machine before gem5 simulation
@@ -62,7 +65,7 @@ $(RUN_SPECs): check-env
 	cd ${M5_CPU2006}; \
 	. ./shrc; \
 	runspec --action=run --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst run_spec2006_,,$@).bld.cfg int; \
-	runspec --action=run --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst run_spec2006_,,$@).bld.cfg fp; \
+	runspec --action=run --tuning=base -i ref -n 1 --noreportable --config ${PWD}/spec2006_configs/gem5-$(subst run_spec2006_,,$@).bld.cfg fp;
 	@echo "$(@) done"
 
 # Clean SPEC2006 for gem5

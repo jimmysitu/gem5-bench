@@ -33,3 +33,4 @@
 
 # Misc
 *.cfg.*
+m5tools/*.sh
