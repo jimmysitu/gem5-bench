@@ -143,7 +143,7 @@ run_gem5_x86:
 # Build util for full system
 build_util_x86:
 	cd gem5/util/m5; \
-	make -f Makefile.x86
+	make -f Makefile.x86 CC=gcc -no-pie
 
 build_util_aarch64:
 	cd gem5/util/m5; \
@@ -170,6 +170,7 @@ install_spec_x86: install_tools_x86
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
 
+# Debug commands
 mount_img_x86:
 	sudo kpartx -av ubuntu-1604.X86.img
 	@sleep 1
