@@ -162,7 +162,7 @@ install_tools_x86:
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
 
-install_spce_x86:
+install_spec_x86: install_tools_x86
 	sudo kpartx -av ubuntu-1604.X86.img
 	@sleep 1
 	sudo mount /dev/mapper/loop0p1 /mnt
