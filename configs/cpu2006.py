@@ -712,7 +712,7 @@ if __name__ == '__main__':
                         print('./' + x.executable + ' ' + (' '.join(x.args)) + ' \\', file=f)
                         print('    ' + '1>' + ('.'.join([x.name, size, wrkld, 'out'])) + ' \\', file=f)
                         print('    ' + '2>' + ('.'.join([x.name, size, wrkld, 'err'])), file=f)
-                        print('if [-s /sbin/m5]', file=f)
+                        print('if [ -s /sbin/m5 ]', file=f)
                         print('then', file=f)
                         print('    /sbin/m5 writefile ' + ('.'.join([x.name, size, wrkld, 'out'])) + ' ' + ('.'.join([x.name, size, wrkld, 'simout'])), file=f)
                         print('    /sbin/m5 writefile ' + ('.'.join([x.name, size, wrkld, 'err'])) + ' ' + ('.'.join([x.name, size, wrkld, 'simerr'])), file=f)
