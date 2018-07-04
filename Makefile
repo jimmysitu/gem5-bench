@@ -167,8 +167,13 @@ install_spec_x86: install_tools_x86
 	@sleep 1
 	sudo mount /dev/mapper/loop0p1 /mnt
 	sudo cp -r ${M5_CPU2006} /mnt/home/gem5/.
+	sudo cp Makefile /mnt/home/gem5/.
+	sudo cp -r spec2006_configs /mnt/home/gem5/.
+	sudo chown 1010 /mnt/home/gem5/* -R
+	sudo chgrp 1010 /mnt/home/gem5/* -R
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
+	@echo "SPEC2006 installed to image, recompile may need if guest kernel is different from host"
 
 # Debug commands
 mount_img_x86:
