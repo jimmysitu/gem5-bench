@@ -74,7 +74,7 @@ $(CLEAN_SPECs): check-env
 	. ./shrc; \
 	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst clean_spec2006_,,$@).bld.cfg int; \
 	runspec --action=clean --config ${PWD}/spec2006_configs/gem5-$(subst clean_spec2006_,,$@).bld.cfg fp; \
-	rm ${PWD}/spec2006_configs/gem5-$(subst clean_spec2006_,,$@).bld.cfg; \
+	rm ${PWD}/spec2006_configs/gem5-$(subst clean_spec2006_,,$@).bld.cfg;
 	@echo "$(@) done"
 
 # Build gem5
@@ -143,7 +143,7 @@ run_gem5_x86:
 # Build util for full system
 build_util_x86:
 	cd gem5/util/m5; \
-	make -f Makefile.x86 CC=gcc -no-pie
+	make -f Makefile.x86 CC='gcc -no-pie'
 
 build_util_aarch64:
 	cd gem5/util/m5; \
