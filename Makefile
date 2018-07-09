@@ -162,7 +162,8 @@ install_tools_x86:
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
 
-install_spec_x86: install_tools_x86
+install_spec_x86: install_tools_x86 setup_spec2006_X86 gen-spec2006-cmd
+	make clean_spec2006_X86
 	sudo kpartx -av ubuntu-1604.X86.img
 	@sleep 1
 	sudo mount /dev/mapper/loop0p1 /mnt
@@ -171,6 +172,7 @@ install_spec_x86: install_tools_x86
 	sudo chgrp 1010 /mnt/$(M5_CPU2006) -R
 	sudo cp Makefile /mnt/home/gem5/.
 	sudo cp -r spec2006_configs /mnt/home/gem5/.
+	sudo cp -r m5tools /mnt/home/gem5/.
 	sudo chown 1010 /mnt/home/gem5/* -R
 	sudo chgrp 1010 /mnt/home/gem5/* -R
 	sudo umount /mnt
