@@ -151,6 +151,8 @@ build_util_aarch64:
 
 # Install tools to full system disk
 install_tools_x86:
+	./m5tools/render_gem5init.py
+	chmod +x ./m5tools/gem5init
 	sudo kpartx -av ubuntu-1604.X86.img
 	@sleep 1
 	sudo mount /dev/mapper/loop0p1 /mnt

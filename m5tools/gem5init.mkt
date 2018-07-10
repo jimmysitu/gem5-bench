@@ -6,6 +6,7 @@ echo "Got CPU type: $CPU"
 if [ "$CPU" != "M5 Simulator" ];
 then
     echo "Not in gem5. Not loading script"
+    echo "Not in gem5. Not loading script" > /home/gem5/gem5init.log
     exit 0
 fi
 
@@ -14,11 +15,12 @@ fi
 chmod 755 /tmp/script
 if [ -s /tmp/script ]
 then
+    echo "In gem5. loaded script"
+    echo "In gem5. loaded script" > /home/gem5/gem5init.log
     # If there is a script, execute the script and then exit the simulation
-    su root -c 'export M5_CPU2006=/home/gem5/cpu2006;/tmp/script' # gives script full privileges as root user in multi-user mode
+    su root -c 'export M5_CPU2006=${M5_CPU2006};/tmp/script' # gives script full privileges as root user in multi-user mode
     sync
     sleep 10
     /sbin/m5 exit
 fi
 echo "No script found"
-
