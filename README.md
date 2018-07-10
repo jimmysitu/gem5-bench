@@ -23,11 +23,11 @@ sudo apt-get install gcc-aarch64-linux-gnu device-tree-compiler
 ## Build SPEC2006 for gem5 SE mode
 First, build spec2006 on native machine
 ```bash
-make BUILD_SPEC2006_$(ISA)
+make build_spec2006_$(ISA)
 ```
 Second, run spec2006 on native machine for gem5 do not implement mkdir syscall, some tmp/result dir need to be setup firstly
 ```bash
-make RUN_SPEC2006_$(ISA)
+make run_spec2006_$(ISA)
 ```
 
 ## Run SPEC2006 on gem5 SE mode
