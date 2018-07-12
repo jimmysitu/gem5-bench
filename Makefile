@@ -161,6 +161,7 @@ install_tools_x86:
 	sudo cp m5tools/gem5.service /mnt/lib/systemd/system/.
 	-cd /mnt/etc/systemd/system/default.target.wants; \
 		sudo ln -s /lib/systemd/system/gem5.service
+	-sudo rm /mnt/home/gem5/gem5init.log
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
 
