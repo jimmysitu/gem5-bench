@@ -4,7 +4,7 @@ Documentation=http://gem5.org
 After=getty.target
 
 [Service]
-Type=oneshot
+Type=idle
 ExecStart=/sbin/gem5init
 StandardOutput=tty
 StandardInput=tty-force

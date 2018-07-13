@@ -165,6 +165,22 @@ install_tools_x86:
 	sudo umount /mnt
 	sudo kpartx -dv ubuntu-1604.X86.img
 
+test_tools_x86:
+	chmod +x ./t.sh
+	chmod +x ./c.sh
+	sudo kpartx -av ubuntu-1604.X86.img
+	@sleep 1
+	sudo mount /dev/mapper/loop0p1 /mnt
+	sudo cp gem5/util/m5/m5 /mnt/sbin/.
+	sudo cp ./t.sh /mnt/sbin/gem5init
+	sudo cp ./c.sh /mnt/home/gem5/.
+	sudo cp m5tools/gem5.service /mnt/lib/systemd/system/.
+	-cd /mnt/etc/systemd/system/default.target.wants; \
+		sudo ln -s /lib/systemd/system/gem5.service
+	-sudo rm /mnt/home/gem5/gem5init.log
+	sudo umount /mnt
+	sudo kpartx -dv ubuntu-1604.X86.img
+
 install_spec_x86: install_tools_x86 setup_spec2006_X86 gen-spec2006-cmd
 	make clean_spec2006_X86
 	sudo kpartx -av ubuntu-1604.X86.img
