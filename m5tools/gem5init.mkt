@@ -18,7 +18,8 @@ then
     echo "Loaded script" | tee -a /home/gem5/gem5init.log
     # If there is a script, execute the script and then exit the simulation
     #su root -c 'export M5_CPU2006=${M5_CPU2006};/tmp/script' # gives script full privileges as root user in multi-user mode
-    export M5_CPU2006="${M5_CPU2006}" |& tee -a /home/gem5/gem5init.log
+    export M5_CPU2006="${M5_CPU2006}"
+    echo "M5_CPU2006=$M5_CPU2006"
     /tmp/script |& tee -a /home/gem5/gem5init.log
     sync
     echo "Script done, exit in 10s" | tee -a /home/gem5/gem5init.log
