@@ -4,6 +4,9 @@ A wrapper for simulation with gem5
 ## gem5 Basic
 - Getting start with [Learning gem5](http://learning.gem5.org/)
 
+## Host machine requirements
+- At least 32G DRAM for full system mode with spec2006 installed and runing
+
 ## Install Dependencies Packages
 ```bash
 sudo apt install build-essential git m4 scons zlib1g zlib1g-dev libprotobuf-dev protobuf-compiler libprotoc-dev libgoogle-perftools-dev python-dev python
@@ -44,6 +47,7 @@ make $(benchname) ISA=$(ISA) WRKLD=$(WORKLOAD)
 Install Ubuntu 16.04 to disk image for gem5 full system mode
 ```bash
 make build_img_x86
+
 ```
 Build Linux kernel, you can define you kernel in linux_configs/config-<ISA>.cfg
 ```bash
