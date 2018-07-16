@@ -26,11 +26,11 @@ sudo apt-get install gcc-aarch64-linux-gnu device-tree-compiler
 ## Build SPEC2006 for gem5 SE mode
 First, build spec2006 on native machine
 ```bash
-make BUILD_SPEC2006_$(ISA)
+make build_spec2006_$(ISA)
 ```
 Second, run spec2006 on native machine for gem5 do not implement mkdir syscall, some tmp/result dir need to be setup firstly
 ```bash
-make RUN_SPEC2006_$(ISA)
+make run_spec2006_$(ISA)
 ```
 
 ## Run SPEC2006 on gem5 SE mode
@@ -55,10 +55,27 @@ make build_kernel_x86
 ```
 Install tools and benchmark to disk image
 ```bash
-make install_tools_x86
 make install_spec_x86
 ```
+If your host kernel is different from the guest, recompile of spec2006 may need. Try to recompile it on qemu
+```bash
+make run_qemu_x86
+```
+Once logined, compile the benchmark with this command
+```bash
+export M5_CPU2006=<path_to_CPU2006>
+make setup_spec2006_X86
+```
+Try run benchmark on qemu, and make sure benchmark exists without error
+```bash
+sh ./m5tools/400.xxxxxx.sh
+```
 
+# Run Benchmark on gem5 with Full System Mode
+```bash
+make run_gem5_x86 CMD=./m5tools/<benchmark>.sh
+```
+Log of benchmark will be wrote to ./m5out/*.out 
 
 ## TODO
 - Add Full system image making flow for ARM
