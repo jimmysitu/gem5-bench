@@ -78,4 +78,21 @@ Log of benchmark will be wrote to ./m5out/*.out
 - Add McPAT flow for power analysis
 - output redirect not work in SE mode
 
+## Trouble Shooting
+### gem5 is killed by system
+Double confirm this issue by
+```bash
+grep -i 'killed process' /var/log/kern.log
+```
+Workaround 
+```bash
+sudo su
+echo 1 > /proc/sys/vm/overcommit_memory
+```
+Documentation [here](https://www.kernel.org/doc/Documentation/sysctl/vm.txt)
+
+
+
+
+
 
