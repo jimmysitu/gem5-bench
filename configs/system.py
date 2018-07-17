@@ -31,15 +31,26 @@ import m5
 from m5.objects import *
 from m5.util import convert
 
-import x86
-
+import x86_mp
 from caches import *
 
-class MySystem(LinuxX86System):
+import SimpleOpts
 
-    def __init__(self, opts):
-        super(MySystem, self).__init__()
+class SimSystem(LinuxX86System):
+
+    SimpleOpts.add_option("--no_host_parallel", default=False,
+                action="store_true",
+                help="Do NOT run gem5 on multiple host threads (kvm only)")
+
+    SimpleOpts.add_option("--cpus", default=1, type="int",
+                          help="Number of CPUs in the system")
+
+    def __init__(self, opts, no_kvm=False):
+        super(SimSystem, self).__init__()
         self._opts = opts
+        self._no_kvm = no_kvm
+
+        self._host_parallel = not self._opts.no_host_parallel
 
         # Set up the clock domain and the voltage domain
         self.clk_domain = SrcClockDomain()
@@ -56,7 +67,7 @@ class MySystem(LinuxX86System):
 
         # Create the main memory bus
         # This connects to main memory
-        self.membus = SystemXBar()
+        self.membus = SystemXBar(width = 64)
         self.membus.badaddr_responder = BadAddr()
         self.membus.default = self.membus.badaddr_responder.pio
 
@@ -65,7 +76,7 @@ class MySystem(LinuxX86System):
 
         # This will initialize most of the x86-specific system parameters
         # This includes things like the I/O, multiprocessor support, BIOS...
-        x86.init_fs(self, self.membus)
+        x86_mp.init_fs(self, self.membus, self._opts.cpus)
 
         # Change this path to point to the kernel you want to use
         # Kernel from http://www.m5sim.org/dist/current/x86/x86-system.tar.bz2
@@ -94,6 +105,17 @@ class MySystem(LinuxX86System):
         # Set up the interrupt controllers for the system (x86 specific)
         self.setupInterrupts()
 
+        if self._host_parallel:
+            # To get the KVM CPUs to run on different host CPUs
+            # Specify a different event queue for each CPU
+            for i,cpu in enumerate(self.cpu):
+                for obj in cpu.descendants():
+                    obj.eventq_index = 0
+                cpu.eventq_index = i + 1
+
+    def getHostParallel(self):
+        return self._host_parallel
+
     def createCPU(self):
         """ Create a CPU for the system """
         # This defaults to one simple atomic CPU. Using other CPU models
@@ -102,9 +124,29 @@ class MySystem(LinuxX86System):
         # Note: If you use multiple CPUs, then the BIOS config needs to be
         #       updated as well.
 
-        self.cpu = AtomicSimpleCPU()
-        self.mem_mode = 'atomic'
-        self.cpu.createThreads()
+        if self._no_kvm:
+            self.cpu = [AtomicSimpleCPU(cpu_id = i, switched_out = False)
+                              for i in range(self._opts.cpus)]
+            self.mem_mode = 'atomic'
+        else:
+            # Note KVM needs a VM and atomic_noncaching
+            self.cpu = [X86KvmCPU(cpu_id = i)
+                            for i in range(self._opts.cpus)]
+            self.kvm_vm = KvmVM()
+            self.mem_mode = 'atomic_noncaching'
+
+            self.atomicCpu = [AtomicSimpleCPU(cpu_id = i, switched_out = True)
+                                for i in range(self._opts.cpus)]
+
+        self.timingCpu = [DerivO3CPU(cpu_id = i, switched_out = True)
+                                for i in range(self._opts.cpus)]
+
+        for cpu in self.cpu:
+            cpu.createThreads()
+
+    def switchCpus(self, old, new):
+        assert(new[0].switchedOut())
+        m5.switchCpus(self, zip(old, new))
 
     def setDiskImage(self, img_path):
         """ Set the disk image
@@ -116,24 +158,43 @@ class MySystem(LinuxX86System):
         self.pc.south_bridge.ide.disks = [disk0]
 
     def createCacheHierarchy(self):
-        """ Create a simple cache heirarchy with the caches from part1 """
+        """ Create a simple cache heirarchy with the caches"""
 
-        # Create an L1 instruction and data caches and an MMU cache
-        # The MMU cache caches accesses from the inst and data TLBs
-        self.cpu.icache = L1ICache()
-        self.cpu.dcache = L1DCache()
+        # Create an L3 cache (with crossbar)
+        self.l3bus = L2XBar(width = 64,
+                            snoop_filter = SnoopFilter(max_capacity='32MB'))
 
-        # Connect the instruction, data, and MMU caches to the CPU
-        self.cpu.icache.connectCPU(self.cpu)
-        self.cpu.dcache.connectCPU(self.cpu)
+        for cpu in self.cpu:
+            # Create a memory bus, a coherent crossbar, in this case
+            cpu.l2bus = L2XBar()
 
-        # Hook the CPU ports up to the membus
-        self.cpu.icache.connectBus(self.membus)
-        self.cpu.dcache.connectBus(self.membus)
+            # Create an L1 instruction and data cache
+            cpu.icache = L1ICache(self._opts)
+            cpu.dcache = L1DCache(self._opts)
+            cpu.mmucache = MMUCache()
 
-        # Connect the CPU TLBs directly to the mem.
-        self.cpu.itb.walker.port = self.membus.slave
-        self.cpu.dtb.walker.port = self.membus.slave
+            # Connect the instruction and data caches to the CPU
+            cpu.icache.connectCPU(cpu)
+            cpu.dcache.connectCPU(cpu)
+            cpu.mmucache.connectCPU(cpu)
+
+            # Hook the CPU ports up to the l2bus
+            cpu.icache.connectBus(cpu.l2bus)
+            cpu.dcache.connectBus(cpu.l2bus)
+            cpu.mmucache.connectBus(cpu.l2bus)
+
+            # Create an L2 cache and connect it to the l2bus
+            cpu.l2cache = L2Cache(self._opts)
+            cpu.l2cache.connectCPUSideBus(cpu.l2bus)
+
+            # Connect the L2 cache to the L3 bus
+            cpu.l2cache.connectMemSideBus(self.l3bus)
+
+        self.l3cache = BankedL3Cache(self._opts)
+        self.l3cache.connectCPUSideBus(self.l3bus)
+
+        # Connect the L3 cache to the membus
+        self.l3cache.connectMemSideBus(self.membus)
 
     def createMemoryControllers(self):
         """ Create the memory controller for the system """
@@ -148,14 +209,16 @@ class MySystem(LinuxX86System):
     def setupInterrupts(self):
         """ Create the interrupt controller for the CPU """
 
-        # create the interrupt controller for the CPU, connect to the membus
-        self.cpu.createInterruptController()
+        for cpu in self.cpu:
+            # create the interrupt controller CPU and connect to the membus
+            cpu.createInterruptController()
 
-        # For x86 only, make sure the interrupts are connected to the memory
-        # Note: these are directly connected to the memory bus, not cached
-        self.cpu.interrupts[0].pio = self.membus.master
-        self.cpu.interrupts[0].int_master = self.membus.slave
-        self.cpu.interrupts[0].int_slave = self.membus.master
+            # For x86 only, connect interrupts to the memory
+            # Note: these are directly connected to the memory bus and
+            #       not cached
+            cpu.interrupts[0].pio = self.membus.master
+            cpu.interrupts[0].int_master = self.membus.slave
+            cpu.interrupts[0].int_slave = self.membus.master
 
 class CowDisk(IdeDisk):
     """ Wrapper class around IdeDisk to make a simple copy-on-write disk

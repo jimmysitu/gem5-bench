@@ -73,7 +73,7 @@ def init_fs(system, membus, cpus=1):
     system.pc.attachIO(system.iobus)
 
     # Add a tiny cache to the IO bus.
-    # This cache is required for the classic memory model to mantain coherence
+    # This cache is required for the classic memory model for coherence
     system.iocache = Cache(assoc=8,
                         tag_latency = 50,
                         data_latency = 50,
