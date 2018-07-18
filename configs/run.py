@@ -25,7 +25,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# Authors: Jason Lowe-Power
+# Authors: Jimmy Situ
 
 import sys
 
@@ -35,7 +35,7 @@ from m5.objects import *
 sys.path.append('configs/common/') # For the next line...
 import SimpleOpts
 
-from system import MySystem
+from system import SimSystem
 
 SimpleOpts.add_option("--script", default='',
                       help="Script to execute in the simulated system")
@@ -44,7 +44,7 @@ if __name__ == "__m5_main__":
     (opts, args) = SimpleOpts.parse_args()
 
     # create the system we are going to simulate
-    system = MySystem(opts)
+    system = SimSystem(opts)
 
     # Read in the script file passed in via an option.
     # This file gets read and executed by the simulated system after boot.
@@ -54,12 +54,18 @@ if __name__ == "__m5_main__":
     # set up the root SimObject and start the simulation
     root = Root(full_system = True, system = system)
 
+    if system.getHostParallel():
+        # Required for running kvm on multiple host cores.
+        # Uses gem5's parallel event queue feature
+        # Note: The simulator is quite picky about this number!
+        root.sim_quantum = int(1e9) # 1 ms
+
     # instantiate all of the objects we've created above
     m5.instantiate()
 
     # Keep running until we are done.
     print("Running the simulation")
-    # TODO: Add kvm fast forward here
+    # TODO: switchCpus here
     exit_event = m5.simulate()
     print('Exiting @ tick %i because %s' % (m5.curTick(),
                                             exit_event.getCause()))
