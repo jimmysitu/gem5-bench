@@ -54,11 +54,11 @@ if __name__ == "__m5_main__":
     # set up the root SimObject and start the simulation
     root = Root(full_system = True, system = system)
 
-#    if system.getHostParallel():
-#        # Required for running kvm on multiple host cores.
-#        # Uses gem5's parallel event queue feature
-#        # Note: The simulator is quite picky about this number!
-#        root.sim_quantum = int(1e9) # 1 ms
+    if system.getHostParallel():
+        # Required for running kvm on multiple host cores.
+        # Uses gem5's parallel event queue feature
+        # Note: The simulator is quite picky about this number!
+        root.sim_quantum = int(1e9) # 1 ms
 
     # instantiate all of the objects we've created above
     m5.instantiate()
