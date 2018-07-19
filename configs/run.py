@@ -44,7 +44,7 @@ if __name__ == "__m5_main__":
     (opts, args) = SimpleOpts.parse_args()
 
     # create the system we are going to simulate
-    system = SimSystem(opts)
+    system = SimSystem(opts, no_kvm=True)
 
     # Read in the script file passed in via an option.
     # This file gets read and executed by the simulated system after boot.
@@ -54,11 +54,11 @@ if __name__ == "__m5_main__":
     # set up the root SimObject and start the simulation
     root = Root(full_system = True, system = system)
 
-    if system.getHostParallel():
-        # Required for running kvm on multiple host cores.
-        # Uses gem5's parallel event queue feature
-        # Note: The simulator is quite picky about this number!
-        root.sim_quantum = int(1e9) # 1 ms
+#    if system.getHostParallel():
+#        # Required for running kvm on multiple host cores.
+#        # Uses gem5's parallel event queue feature
+#        # Note: The simulator is quite picky about this number!
+#        root.sim_quantum = int(1e9) # 1 ms
 
     # instantiate all of the objects we've created above
     m5.instantiate()

@@ -50,7 +50,7 @@ class SimSystem(LinuxX86System):
         self._opts = opts
         self._no_kvm = no_kvm
 
-        self._host_parallel = not self._opts.no_host_parallel
+        self._host_parallel = (not self._opts.no_host_parallel) & (not no_kvm)
 
         # Set up the clock domain and the voltage domain
         self.clk_domain = SrcClockDomain()
@@ -135,12 +135,12 @@ class SimSystem(LinuxX86System):
             self.kvm_vm = KvmVM()
             self.mem_mode = 'atomic_noncaching'
 
-            self.atomicCpu = [AtomicSimpleCPU(cpu_id = i, switched_out = True)
-                                for i in range(self._opts.cpus)]
-
-        self.timingCpu = [DerivO3CPU(cpu_id = i, switched_out = True)
-                                for i in range(self._opts.cpus)]
-
+#            self.atomicCpu = [AtomicSimpleCPU(cpu_id = i, switched_out = True)
+#                                for i in range(self._opts.cpus)]
+#
+#            self.timingCpu = [DerivO3CPU(cpu_id = i, switched_out = True)
+#                                for i in range(self._opts.cpus)]
+#
         for cpu in self.cpu:
             cpu.createThreads()
 
