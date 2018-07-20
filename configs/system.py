@@ -166,6 +166,7 @@ class SimSystem(LinuxX86System):
     def createCacheHierarchy(self):
         """ Create a simple cache heirarchy with the caches from part1 """
 
+        self.l2bus = L2XBar()
         for cpu in self.cpu:
             # Create an L1 instruction and data caches and an MMU cache
             # The MMU cache caches accesses from the inst and data TLBs
@@ -179,13 +180,16 @@ class SimSystem(LinuxX86System):
             cpu.mmucache.connectCPU(cpu)
 
             # Hook the CPU ports up to the membus
-            cpu.icache.connectBus(self.membus)
-            cpu.dcache.connectBus(self.membus)
-            cpu.mmucache.connectBus(self.membus)
+            cpu.icache.connectBus(self.l2bus)
+            cpu.dcache.connectBus(self.l2bus)
+            cpu.mmucache.connectBus(self.l2bus)
 
-            # Connect the CPU TLBs directly to the mem.
-            #cpu.itb.walker.port = self.membus.slave
-            #cpu.dtb.walker.port = self.membus.slave
+        # Create an L2 cache and connect it to the l2bus
+        self.l2cache = L2Cache(self._opts)
+        self.l2cache.connectCPUSideBus(self.l2bus)
+
+        # Connect the L2 cache to the L3 bus
+        self.l2cache.connectMemSideBus(self.membus)
 
 #    def createCacheHierarchy(self):
 #        """ Create a simple cache heirarchy with the caches"""
