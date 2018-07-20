@@ -32,6 +32,7 @@ from m5.objects import *
 from m5.util import convert
 
 import x86_mp
+import x86
 from caches import *
 
 import SimpleOpts
@@ -76,7 +77,8 @@ class SimSystem(LinuxX86System):
 
         # This will initialize most of the x86-specific system parameters
         # This includes things like the I/O, multiprocessor support, BIOS...
-        x86_mp.init_fs(self, self.membus, self._opts.cpus)
+        #x86_mp.init_fs(self, self.membus, self._opts.cpus)
+        x86.init_fs(self, self.membus)
 
         # Change this path to point to the kernel you want to use
         # Kernel from http://www.m5sim.org/dist/current/x86/x86-system.tar.bz2
