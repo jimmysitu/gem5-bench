@@ -171,18 +171,21 @@ class SimSystem(LinuxX86System):
             # The MMU cache caches accesses from the inst and data TLBs
             cpu.icache = L1ICache()
             cpu.dcache = L1DCache()
+            cpu.mmucache = MMUCache()
 
             # Connect the instruction, data, and MMU caches to the CPU
             cpu.icache.connectCPU(cpu)
             cpu.dcache.connectCPU(cpu)
+            cpu.mmucache.connectCPU(cpu)
 
             # Hook the CPU ports up to the membus
             cpu.icache.connectBus(self.membus)
             cpu.dcache.connectBus(self.membus)
+            cpu.mmucache.connectBus(self.membus)
 
             # Connect the CPU TLBs directly to the mem.
-            cpu.itb.walker.port = self.membus.slave
-            cpu.dtb.walker.port = self.membus.slave
+            #cpu.itb.walker.port = self.membus.slave
+            #cpu.dtb.walker.port = self.membus.slave
 
 #    def createCacheHierarchy(self):
 #        """ Create a simple cache heirarchy with the caches"""
