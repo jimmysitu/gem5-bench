@@ -77,8 +77,8 @@ class SimSystem(LinuxX86System):
 
         # This will initialize most of the x86-specific system parameters
         # This includes things like the I/O, multiprocessor support, BIOS...
-        #x86_mp.init_fs(self, self.membus, self._opts.cpus)
-        x86.init_fs(self, self.membus)
+        x86_mp.init_fs(self, self.membus, self._opts.cpus)
+        #x86.init_fs(self, self.membus)
 
         # Change this path to point to the kernel you want to use
         # Kernel from http://www.m5sim.org/dist/current/x86/x86-system.tar.bz2
@@ -163,64 +163,67 @@ class SimSystem(LinuxX86System):
         disk0 = CowDisk(img_path)
         self.pc.south_bridge.ide.disks = [disk0]
 
-    def createCacheHierarchy(self):
-        """ Create a simple cache heirarchy with the caches from part1 """
-
-        self.l2bus = L2XBar()
-        for cpu in self.cpu:
-            # Create an L1 instruction and data caches and an MMU cache
-            # The MMU cache caches accesses from the inst and data TLBs
-            cpu.icache = L1ICache()
-            cpu.dcache = L1DCache()
-            cpu.mmucache = MMUCache()
-
-            # Connect the instruction, data, and MMU caches to the CPU
-            cpu.icache.connectCPU(cpu)
-            cpu.dcache.connectCPU(cpu)
-            cpu.mmucache.connectCPU(cpu)
-
-            # Hook the CPU ports up to the membus
-            cpu.icache.connectBus(self.l2bus)
-            cpu.dcache.connectBus(self.l2bus)
-            cpu.mmucache.connectBus(self.l2bus)
-
-        # Create an L2 cache and connect it to the l2bus
-        self.l2cache = L2Cache(self._opts)
-        self.l2cache.connectCPUSideBus(self.l2bus)
-
-        # Connect the L2 cache to the L3 bus
-        self.l2cache.connectMemSideBus(self.membus)
-
 #    def createCacheHierarchy(self):
-#        """ Create a simple cache heirarchy with the caches"""
+#        """ Create a simple cache heirarchy with the caches from part1 """
 #
-#        # Create an L3 cache (with crossbar)
-#        self.l3bus = L2XBar(width = 64,
-#                            snoop_filter = SnoopFilter(max_capacity='32MB'))
-#
+#        self.l2bus = L2XBar()
 #        for cpu in self.cpu:
-#            # Create a memory bus, a coherent crossbar, in this case
-#            cpu.l2bus = L2XBar()
-#
-#            # Create an L1 instruction and data cache
-#            cpu.icache = L1ICache(self._opts)
-#            cpu.dcache = L1DCache(self._opts)
+#            # Create an L1 instruction and data caches and an MMU cache
+#            # The MMU cache caches accesses from the inst and data TLBs
+#            cpu.icache = L1ICache()
+#            cpu.dcache = L1DCache()
 #            cpu.mmucache = MMUCache()
 #
-#            # Connect the instruction and data caches to the CPU
+#            # Connect the instruction, data, and MMU caches to the CPU
 #            cpu.icache.connectCPU(cpu)
 #            cpu.dcache.connectCPU(cpu)
 #            cpu.mmucache.connectCPU(cpu)
 #
-#            # Hook the CPU ports up to the l2bus
-#            cpu.icache.connectBus(cpu.l2bus)
-#            cpu.dcache.connectBus(cpu.l2bus)
-#            cpu.mmucache.connectBus(cpu.l2bus)
+#            # Hook the CPU ports up to the membus
+#            cpu.icache.connectBus(self.l2bus)
+#            cpu.dcache.connectBus(self.l2bus)
+#            cpu.mmucache.connectBus(self.l2bus)
 #
-#            # Create an L2 cache and connect it to the l2bus
-#            cpu.l2cache = L2Cache(self._opts)
-#            cpu.l2cache.connectCPUSideBus(cpu.l2bus)
+#        # Create an L2 cache and connect it to the l2bus
+#        self.l2cache = L2Cache(self._opts)
+#        self.l2cache.connectCPUSideBus(self.l2bus)
 #
+#        # Connect the L2 cache to the L3 bus
+#        self.l2cache.connectMemSideBus(self.membus)
+
+    def createCacheHierarchy(self):
+        """ Create a simple cache heirarchy with the caches"""
+
+#        # Create an L3 cache (with crossbar)
+#        self.l3bus = L2XBar(width = 64,
+#                            snoop_filter = SnoopFilter(max_capacity='32MB'))
+
+        for cpu in self.cpu:
+            # Create a memory bus, a coherent crossbar, in this case
+            cpu.l2bus = L2XBar()
+
+            # Create an L1 instruction and data cache
+            cpu.icache = L1ICache(self._opts)
+            cpu.dcache = L1DCache(self._opts)
+            cpu.mmucache = MMUCache()
+
+            # Connect the instruction and data caches to the CPU
+            cpu.icache.connectCPU(cpu)
+            cpu.dcache.connectCPU(cpu)
+            cpu.mmucache.connectCPU(cpu)
+
+            # Hook the CPU ports up to the l2bus
+            cpu.icache.connectBus(cpu.l2bus)
+            cpu.dcache.connectBus(cpu.l2bus)
+            cpu.mmucache.connectBus(cpu.l2bus)
+
+            # Create an L2 cache and connect it to the l2bus
+            cpu.l2cache = L2Cache(self._opts)
+            cpu.l2cache.connectCPUSideBus(cpu.l2bus)
+
+            # Connect the L2 cache to the membus
+            cpu.l2cache.connectMemSideBus(self.membus)
+
 #            # Connect the L2 cache to the L3 bus
 #            cpu.l2cache.connectMemSideBus(self.l3bus)
 #
