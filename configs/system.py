@@ -62,8 +62,9 @@ class SimSystem(LinuxX86System):
         # We can have at most 3GB of memory unless we do something special
         # to account for this I/O gap. For simplicity, this is omitted.
         mem_size = '2048MB'
-        self.mem_ranges = [AddrRange(mem_size),
+        self.mem_ranges = [AddrRange('100MB'),
                            AddrRange(0xC0000000, size=0x100000), # For I/0
+                           AddrRange(Addr('4GB'), size = mem_size) # All data
                            ]
 
         # Create the main memory bus
@@ -227,7 +228,8 @@ class SimSystem(LinuxX86System):
             # Connect the L2 cache to the L3 bus
             cpu.l2cache.connectMemSideBus(self.l3bus)
 
-        self.l3cache = L3Cache(self._opts)
+        self.l3cache = BankedL3Cache(self._opts)
+        #self.l3cache = L3Cache(self._opts)
         self.l3cache.connectCPUSideBus(self.l3bus)
 
         # Connect the L3 cache to the membus
