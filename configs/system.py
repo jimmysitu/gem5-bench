@@ -32,7 +32,6 @@ from m5.objects import *
 from m5.util import convert
 
 import x86_mp
-import x86
 from caches import *
 
 import SimpleOpts
@@ -62,10 +61,10 @@ class SimSystem(LinuxX86System):
         # We can have at most 3GB of memory unless we do something special
         # to account for this I/O gap. For simplicity, this is omitted.
         mem_size = '2048MB'
-        self.mem_ranges = [AddrRange('100MB'),
-                           AddrRange(0xC0000000, size=0x100000), # For I/0
-                           AddrRange(Addr('4GB'), size = mem_size) # All data
-                           ]
+        self.mem_ranges = [
+                            AddrRange(mem_size),
+                            AddrRange(0xC0000000, size=0x100000), # For I/0
+                          ]
 
         # Create the main memory bus
         # This connects to main memory
@@ -164,34 +163,6 @@ class SimSystem(LinuxX86System):
         disk0 = CowDisk(img_path)
         self.pc.south_bridge.ide.disks = [disk0]
 
-#    def createCacheHierarchy(self):
-#        """ Create a simple cache heirarchy with the caches from part1 """
-#
-#        self.l2bus = L2XBar()
-#        for cpu in self.cpu:
-#            # Create an L1 instruction and data caches and an MMU cache
-#            # The MMU cache caches accesses from the inst and data TLBs
-#            cpu.icache = L1ICache()
-#            cpu.dcache = L1DCache()
-#            cpu.mmucache = MMUCache()
-#
-#            # Connect the instruction, data, and MMU caches to the CPU
-#            cpu.icache.connectCPU(cpu)
-#            cpu.dcache.connectCPU(cpu)
-#            cpu.mmucache.connectCPU(cpu)
-#
-#            # Hook the CPU ports up to the membus
-#            cpu.icache.connectBus(self.l2bus)
-#            cpu.dcache.connectBus(self.l2bus)
-#            cpu.mmucache.connectBus(self.l2bus)
-#
-#        # Create an L2 cache and connect it to the l2bus
-#        self.l2cache = L2Cache(self._opts)
-#        self.l2cache.connectCPUSideBus(self.l2bus)
-#
-#        # Connect the L2 cache to the L3 bus
-#        self.l2cache.connectMemSideBus(self.membus)
-
     def createCacheHierarchy(self):
         """ Create a simple cache heirarchy with the caches"""
 
@@ -222,13 +193,10 @@ class SimSystem(LinuxX86System):
             cpu.l2cache = L2Cache(self._opts)
             cpu.l2cache.connectCPUSideBus(cpu.l2bus)
 
-#            # Connect the L2 cache to the membus
-#            cpu.l2cache.connectMemSideBus(self.membus)
-#
             # Connect the L2 cache to the L3 bus
             cpu.l2cache.connectMemSideBus(self.l3bus)
 
-        self.l3cache = BankedL3Cache(self._opts)
+        self.l3cache = L3Cache(self._opts)
         #self.l3cache = L3Cache(self._opts)
         self.l3cache.connectCPUSideBus(self.l3bus)
 
