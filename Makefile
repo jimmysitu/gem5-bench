@@ -118,7 +118,7 @@ ifeq (,$(wildcard ./ubuntu-1604.X86.img))
 		--location ubuntu-16.04.4-server-amd64.iso \
 		--initrd-inject=${PWD}/preseed.cfg \
 		--extra-args="locale=en_GB.UTF-8 console-setup/ask_detect=false keyboard-configuration/layoutcode=hu console=ttyS0 file=/preseed.cfg" \
-		--virt-type qemu \
+		--virt-type kvm \
 		--noreboot \
 		--nographics
 	sudo chown `whoami` ubuntu-1604.X86.img
@@ -134,6 +134,7 @@ destroy_img_x86:
 # Run qemu to check kernel
 run_qemu_x86:
 	qemu-system-x86_64 -nographic -hda ubuntu-1604.X86.img \
+		-enable-kvm \
 		-m 2048 \
 		-kernel linux/arch/x86_64/boot/bzImage -append "root=/dev/hda1 console=ttyS0"
 
