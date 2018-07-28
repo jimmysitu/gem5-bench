@@ -12,11 +12,17 @@ A wrapper for simulation with gem5
 sudo apt install build-essential git m4 scons zlib1g zlib1g-dev libprotobuf-dev protobuf-compiler libprotoc-dev libgoogle-perftools-dev python-dev python
 ```
 Install KVM, following instruction on this [page](https://help.ubuntu.com/community/KVM/Installation)
+Add user to group kvm
+```bash
+sudo adduser `whoami` kvm
+```
+Reboot to make this setting works
 
 Install Qemu, for creating gem5 full system image
 ```bash
 sudo apt-get install qemu-kvm qemu virt-manager virt-viewer libvirt-bin virtinst kpartx
 ```
+
 
 Install gcc for ARM if want to build linux kernel for Aarch64
 ```
@@ -88,13 +94,12 @@ Double confirm this issue by
 ```bash
 grep -i 'killed process' /var/log/kern.log
 ```
-Workaround 
+Workaround
 ```bash
 sudo su
 echo 1 > /proc/sys/vm/overcommit_memory
 ```
 Documentation [here](https://www.kernel.org/doc/Documentation/sysctl/vm.txt)
-
 
 
 
