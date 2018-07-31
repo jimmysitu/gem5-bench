@@ -43,14 +43,22 @@ SimpleOpts.add_option("--script", default='',
 if __name__ == "__m5_main__":
     (opts, args) = SimpleOpts.parse_args()
 
+
     # create the system we are going to simulate
-    system = SimSystem(opts, no_kvm=True)
-    #system = SimSystem(opts)
+    #system = SimSystem(opts, no_kvm=True)
+    system = SimSystem(opts)
 
     # Read in the script file passed in via an option.
     # This file gets read and executed by the simulated system after boot.
     # Note: The disk image needs to be configured to do this.
     system.readfile = opts.script
+
+    # For workitems to work correctly
+    # This will cause the simulator to exit simulation when the first work
+    # item is reached and when the first work item is finished.
+    system.work_begin_exit_count = 1
+    system.work_end_exit_count = 1
+
 
     # set up the root SimObject and start the simulation
     root = Root(full_system = True, system = system)
@@ -66,8 +74,20 @@ if __name__ == "__m5_main__":
 
     # Keep running until we are done.
     print("Running the simulation")
-    # TODO: switchCpus here
     exit_event = m5.simulate()
+    while exit_event.getCause() != "m5_exit instruction encountered":
+        if exit_event.getCause() == "user interrupt received":
+            print("User interrupt. Exiting")
+            break
+
+        print('Pause @ tick %i because %s' % (m5.curTick(),
+                                              exit_event.getCause()))
+        if exit_event.getCause() == "switchcpu":
+            system.switchCpus(system.cpu, system.timingCpu)
+
+        print("Continuing")
+        exit_event = m5.simulate()
+
     print('Exiting @ tick %i because %s' % (m5.curTick(),
                                             exit_event.getCause()))
 
