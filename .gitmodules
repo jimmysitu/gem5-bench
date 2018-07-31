@@ -1,6 +1,6 @@
 [submodule "gem5"]
 	path = gem5
-	url = https://gem5.googlesource.com/public/gem5
+	url = https://github.com/jimmysitu/gem5.git
 [submodule "linux"]
 	path = linux
 	url = https://github.com/torvalds/linux.git
