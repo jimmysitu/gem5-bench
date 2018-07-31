@@ -45,8 +45,8 @@ if __name__ == "__m5_main__":
 
 
     # create the system we are going to simulate
-    #system = SimSystem(opts, no_kvm=True)
-    system = SimSystem(opts)
+    system = SimSystem(opts, no_kvm=True)
+    #system = SimSystem(opts)
 
     # Read in the script file passed in via an option.
     # This file gets read and executed by the simulated system after boot.

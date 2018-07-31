@@ -151,7 +151,7 @@ build_util_aarch64:
 	make -f Makefile.aarch64
 
 # Install tools to full system disk
-install_tools_x86:
+install_tools_x86: build_util_x86
 	./m5tools/render_gem5init.py
 	chmod +x ./m5tools/gem5init
 	sudo kpartx -av ubuntu-1604.X86.img
