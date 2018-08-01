@@ -139,7 +139,7 @@ run_qemu_x86:
 		-kernel linux/arch/x86_64/boot/bzImage -append "root=/dev/hda1 console=ttyS0"
 
 run_gem5_x86:
-	./gem5/build/X86/gem5.opt configs/run.py --script=$(CMD)
+	./gem5/build/X86/gem5.opt configs/fs_run.py --script=$(CMD)
 
 # Build util for full system
 build_util_x86:
