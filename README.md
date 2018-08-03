@@ -9,8 +9,8 @@ A wrapper for simulation with gem5
 
 ## Install Dependencies Packages
 ```bash
-sudo apt install build-essential git m4 scons zlib1g zlib1g-dev libprotobuf-dev protobuf-compiler libprotoc-dev libgoogle-perftools-dev python-dev python
-```
+sudo apt install build-essential git m4 scons zlib1g zlib1g-dev libprotobuf-dev protobuf-compiler libprotoc-dev libgoogle-perftools-dev python-dev python gcc-multilib g++multilib```
+
 Install KVM, following instruction on this [page](https://help.ubuntu.com/community/KVM/Installation)
 Add user to group kvm
 ```bash
@@ -84,16 +84,21 @@ make run_gem5_x86 CMD=./m5tools/<benchmark>.sh
 Log of benchmark will be wrote to ./m5out/*.out 
 
 ## TODO
-- Add Full system image making flow for ARM
 - Add McPAT flow for power analysis
-- output redirect not work in SE mode
+  - xml templete for McPAT
+  - Configure more detail O3CPU on gem5 in fs_run.py
+  - Add power analysis flow in Makefile
+- Add Full system image making flow for ARM
+- Output redirect not work in SE mode
 
 ## Trouble Shooting
 ### gem5 is killed by system
+
 Double confirm this issue by
 ```bash
 grep -i 'killed process' /var/log/kern.log
 ```
+
 Workaround
 ```bash
 sudo su
