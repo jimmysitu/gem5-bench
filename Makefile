@@ -197,3 +197,5 @@ umount_img_x86:
 term:
 	./gem5/util/term/m5term localhost 3456
 
+mcpat:
+	make all -C ./mcpat
