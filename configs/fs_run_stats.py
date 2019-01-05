@@ -74,6 +74,7 @@ if __name__ == "__m5_main__":
 
     # Keep running until we are done.
     print("Running the simulation")
+    curCpus = 'system.cpu'
     exit_event = m5.simulate()
     while exit_event.getCause() != "m5_exit instruction encountered":
         if exit_event.getCause() == "user interrupt received":
@@ -83,16 +84,24 @@ if __name__ == "__m5_main__":
         print('Pause @ tick %i because %s' % (m5.curTick(),
                                               exit_event.getCause()))
         if exit_event.getCause() == "switchcpu":
-            system.switchCpus(system.cpu, system.timingCpu)
-            m5.status.reset()
-
-        if exit_event.getCause() == "simulate() limit reached":
-            m5.stats.dump()
+            if 'system.cpu' == curCpus:
+                system.switchCpus(system.cpu, system.timingCpu)
+                curCpus = 'system.timingCpu'
+            else:
+                system.switchCpus(system.timingCpu, system.cpu)
+                curCpus = 'system.cpu'
             m5.stats.reset()
 
-        print("Continuing")
-        # run about 100us in 3G
-        exit_event = m5.simulate(300000)
+        if exit_event.getCause() == "simulate() limit reached":
+            if 'system.timingCpu' == curCpus:
+                m5.stats.dump()
+                m5.stats.reset()
+                print("Continuing...")
+                # run about 100us
+                exit_event = m5.simulate(100000000)
+            else:
+                exit_event = m5.simulate()
+
 
     print('Exiting @ tick %i because %s' % (m5.curTick(),
                                             exit_event.getCause()))
