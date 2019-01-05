@@ -91,15 +91,17 @@ if __name__ == "__m5_main__":
                 system.switchCpus(system.timingCpu, system.cpu)
                 curCpus = 'system.cpu'
             m5.stats.reset()
+            exit_event = m5.simulate(100000000)
 
-        if exit_event.getCause() == "simulate() limit reached":
+        elif exit_event.getCause() == "simulate() limit reached":
             if 'system.timingCpu' == curCpus:
                 m5.stats.dump()
                 m5.stats.reset()
                 print("Continuing...")
-                # run about 100us
-                exit_event = m5.simulate(100000000)
+                # run about 100us * 10
+                exit_event = m5.simulate(100000000 * 10)
             else:
+                m5.stats.reset()
                 exit_event = m5.simulate()
 
 
