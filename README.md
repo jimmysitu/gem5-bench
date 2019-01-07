@@ -90,6 +90,7 @@ Log of benchmark will be wrote to ./m5out/*.out
   - Add power analysis flow in Makefile
 - Add Full system image making flow for ARM
 - Output redirect not work in SE mode
+- Auto login in tty mode, which may help gem5 FS mode run faster?
 
 ## Trouble Shooting
 ### gem5 is killed by system
