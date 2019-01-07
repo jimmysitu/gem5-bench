@@ -42,7 +42,7 @@ class SimSystem(LinuxX86System):
                 action="store_true",
                 help="Do NOT run gem5 on multiple host threads (kvm only)")
 
-    SimpleOpts.add_option("--cpus", default=1, type="int",
+    SimpleOpts.add_option("--cpus", default=2, type="int",
                           help="Number of CPUs in the system")
 
     def __init__(self, opts, no_kvm=False):

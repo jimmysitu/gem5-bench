@@ -142,7 +142,7 @@ run_gem5_x86:
 	./gem5/build/X86/gem5.opt configs/fs_run.py --script=$(CMD)
 
 stats_gem5_x86:
-	./gem5/build/X86/gem5.opt configs/fs_run_stats.py --script=$(CMD)
+	./gem5/build/X86/gem5.opt configs/fs_run_stats.py --cpus=1 --script=$(CMD)
 
 # Build util for full system
 build_util_x86:

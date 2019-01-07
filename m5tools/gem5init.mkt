@@ -24,9 +24,9 @@ then
     echo "M5_CPU2006=$M5_CPU2006"
     /tmp/script |& tee -a /home/gem5/gem5init.log
     sync
-    echo "Script done, exit in 10s" | tee -a /home/gem5/gem5init.log
+    echo "Script done, exit in 1s" | tee -a /home/gem5/gem5init.log
     /sbin/m5 writefile /home/gem5/gem5init.log gem5init.log
-    sleep 10
+    sleep 1
     /sbin/m5 exit
 fi
 echo "No script found"
