@@ -7,3 +7,6 @@
 [submodule "mcpat"]
 	path = mcpat
 	url = https://github.com/jimmysitu/mcpat.git
+[submodule "gem5-resources"]
+	path = gem5-resources
+	url = https://gem5.googlesource.com/public/gem5-resources

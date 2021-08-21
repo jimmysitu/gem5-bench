@@ -5,7 +5,7 @@ A wrapper for simulation with gem5
 - Getting start with [Learning gem5](http://learning.gem5.org/)
 
 ## Host machine requirements
-- At least 32G DRAM for full system mode with spec2006 installed and runing
+- At least 32G DRAM for full system mode with spec2006/spec2017 installed
 
 ## Install Dependencies Packages
 ```bash
@@ -18,7 +18,7 @@ sudo adduser `whoami` kvm
 ```
 Reboot to make this setting works
 
-Install Qemu, for creating gem5 full system image
+Install QEMU, for creating gem5 full system image
 ```bash
 sudo apt-get install qemu-kvm qemu virt-manager virt-viewer libvirt-bin virtinst kpartx
 ```
