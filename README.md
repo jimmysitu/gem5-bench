@@ -7,15 +7,18 @@ A wrapper for simulation with gem5
 ## Host machine requirements
 - At least 32G DRAM for full system mode with spec2006/spec2017 installed
 
-## Install Dependencies Packages
+### Install Dependencies Packages
 ```bash
-sudo apt install build-essential git m4 scons zlib1g zlib1g-dev libprotobuf-dev protobuf-compiler libprotoc-dev libgoogle-perftools-dev python-dev python gcc-multilib g++multilib```
+sudo apt install build-essential git m4 scons zlib1g zlib1g-dev libprotobuf-dev protobuf-compiler libprotoc-dev libgoogle-perftools-dev python-dev python gcc-multilib g++multilib
+```
 
-Install KVM, following instruction on this [page](https://help.ubuntu.com/community/KVM/Installation)
-Add user to group kvm
+#### Install KVM
+
+Following instruction on this [page](https://help.ubuntu.com/community/KVM/Installation). Add user to group kvm
+
 ```bash
 sudo adduser `whoami` kvm
-```
+````
 Reboot to make this setting works
 
 Install QEMU, for creating gem5 full system image
@@ -29,12 +32,35 @@ Install gcc for ARM if want to build linux kernel for Aarch64
 sudo apt-get install gcc-aarch64-linux-gnu device-tree-compiler
 ```
 
+#### Install Docker
+
+Following instruction on this [page](https://docs.docker.com/engine/install/ubuntu/). Add user to group docker
+
+```bash
+sudo usermod -aG docker ${USER}
+```
+
+To apply the new group membership, log out of the server and back in, or type the following:
+
+```bash
+su - ${USER}
+```
+
+Test docker
+
+```bash
+docker run hello-world
+```
+
+
+
 ## Build SPEC2006 for gem5 SE mode
+
 First, build spec2006 on native machine
 ```bash
 make build_spec2006_$(ISA)
 ```
-Second, run spec2006 on native machine for gem5 do not implement mkdir syscall, some tmp/result dir need to be setup firstly
+Second, run spec2006 once on native machine for gem5 do not implement `mkdir` syscall, some tmp/result dir need to be setup firstly
 ```bash
 make run_spec2006_$(ISA)
 ```
@@ -53,7 +79,6 @@ make $(benchname) ISA=$(ISA) WRKLD=$(WORKLOAD)
 Install Ubuntu 16.04 to disk image for gem5 full system mode
 ```bash
 make build_img_x86
-
 ```
 Build Linux kernel, you can define you kernel in linux_configs/config-<ISA>.cfg
 ```bash
@@ -77,7 +102,8 @@ Try run benchmark on qemu, and make sure benchmark exists without error
 sh ./m5tools/400.xxxxxx.sh
 ```
 
-# Run Benchmark on gem5 with Full System Mode
+## Run Benchmark on gem5 with Full System Mode
+
 ```bash
 make run_gem5_x86 CMD=./m5tools/<benchmark>.sh
 ```
