@@ -202,3 +202,15 @@ term:
 
 mcpat:
 	make all -C ./mcpat
+
+# Run for the first time
+build_docker:
+	-mkdir -p $(PWD)/mongodb
+	docker container create -p 27017:27017 -v $(PWD)/mongodb:/data/db --name mongo-gem5 mongo
+
+start_docker:
+	docker start mongo-gem5
+
+stop_docker:
+	docker stop mongo-gem5
+
