@@ -3,7 +3,7 @@
 	url = https://gem5.googlesource.com/public/gem5
 [submodule "linux"]
 	path = linux
-	url = https://github.com/torvalds/linux.git
+	url = https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
 [submodule "mcpat"]
 	path = mcpat
 	url = https://github.com/jimmysitu/mcpat.git

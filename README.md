@@ -107,7 +107,7 @@ sh ./m5tools/400.xxxxxx.sh
 ```bash
 make run_gem5_x86 CMD=./m5tools/<benchmark>.sh
 ```
-Log of benchmark will be wrote to ./m5out/*.out 
+Log of benchmark will be wrote to ./m5out/*.out
 
 ## TODO
 - Add McPAT flow for power analysis
