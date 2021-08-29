@@ -12,7 +12,7 @@ A wrapper for simulation with gem5
 sudo apt install build-essential git m4 scons zlib1g zlib1g-dev libprotobuf-dev protobuf-compiler libprotoc-dev libgoogle-perftools-dev python-dev python gcc-multilib g++multilib
 ```
 
-#### Install KVM
+### Install QEMU & KVM
 
 Following instruction on this [page](https://help.ubuntu.com/community/KVM/Installation). Add user to group kvm
 
@@ -32,9 +32,9 @@ Install gcc for ARM if want to build linux kernel for Aarch64
 sudo apt-get install gcc-aarch64-linux-gnu device-tree-compiler
 ```
 
-#### Install Docker
+### Install Docker
 
-Following instruction on this [page](https://docs.docker.com/engine/install/ubuntu/). Add user to group docker
+Docker, which is used to run mongoDB. Following instruction on this [page](https://docs.docker.com/engine/install/ubuntu/). Add user to group docker
 
 ```bash
 sudo usermod -aG docker ${USER}
@@ -52,6 +52,24 @@ Test docker
 docker run hello-world
 ```
 
+### Install Packer
+
+Packer, which is used to make full system disk image for gem5. Following instruction on this [page](https://www.packer.io/downloads)
+
+```bash
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-get update && sudo apt-get install packer
+```
+
+### Install gem5art
+
+gem5-bench need gem5art to run and reproduce experiment results. 
+
+```bash
+pip install gem5art-artifact gem5art-run gem5art-tasks
+```
+
 
 
 ## Build SPEC2006 for gem5 SE mode
@@ -60,7 +78,7 @@ First, build spec2006 on native machine
 ```bash
 make build_spec2006_$(ISA)
 ```
-Second, run spec2006 once on native machine for gem5 do not implement `mkdir` syscall, some tmp/result dir need to be setup firstly
+Second, run spec2006 once on native machine since gem5 do not implement `mkdir` syscall, some tmp/result dir need to be setup firstly
 ```bash
 make run_spec2006_$(ISA)
 ```
@@ -114,7 +132,7 @@ Log of benchmark will be wrote to ./m5out/*.out
   - xml templete for McPAT
   - Configure more detail O3CPU on gem5 in fs_run.py
   - Add power analysis flow in Makefile
-- Add Full system image making flow for ARM
+- Add Full system image making flow for ARM/RISC-V
 - Output redirect not work in SE mode
 - Auto login in tty mode, which may help gem5 FS mode run faster?
 
