@@ -16,7 +16,9 @@ cd /mnt
 
 
 
-### Available Benchmark 
+### Available Benchmark
+
+SPEC CPU2006 includes 29 benchmarks, organized into 2 suites: an integer suite of 12 benchmarks, known as CINT2006; and a floating point suite of 17 benchmarks, known as CFP2006. 
 
 * 400.perlbench
 * 401.bzip2
