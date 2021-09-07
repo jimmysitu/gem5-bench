@@ -17,8 +17,22 @@ cd /mnt
 Build only cmd,
 
 ```bash
-runspec --action build --config <configure_file.cfg> <benchmark>
+runspec --action build --config <cfg_file> <benchmark>
 ```
+
+`runspec` build action will change cfg file, so it is better to copy a new cfg file for each build.
+
+### Run SPEC CPU2006
+
+Run only cmd,
+
+```bash
+runspec --noreportable --nobuild --config <cfg_file> <benchmark>
+```
+
+**--nobuild**: is added for prebuilt binaries should be used
+
+**--fake**: dry run
 
 #### Tips: Get Final Run Command
 
@@ -44,22 +58,13 @@ And return,
 ../run_base_ref_gem5-x86.0000/perlbench_base.gem5-x86 -I./lib diffmail.pl 4 800 10 17 19 300 > diffmail.4.800.10.17.19.300.out 2>> diffmail.4.800.10.17.19.300.err
 # Starting run for copy #0
 ../run_base_ref_gem5-x86.0000/perlbench_base.gem5-x86 -I./lib splitmail.pl 1600 12 26 16 4500 > splitmail.1600.12.26.16.4500.out 2>> splitmail.1600.12.26.16.4500.err
-16 4500 > spl5
 ```
 
 
 
-### Run SPEC CPU2006
+### 
 
-Run only cmd,
 
-```bash
-runspec --noreportable --nobuild --config <configure_file.cfg> <benchmark>
-```
-
-**--nobuild**: is added for prebuilt binaries should be used
-
-**--fake**: dry run
 
 ### Metrics
 
@@ -83,6 +88,8 @@ The **SPECrate metrics** (e.g., SPECint_rate2006) measure the throughput or rate
   - **SPECint_rate_base2006**: The geometric mean of twelve normalized throughput ratios when the benchmarks are compiled with base tuning.
   - **SPECfp_rate2006**: The geometric mean of seventeen normalized [throughput](https://www.spec.org/cpu2006/Docs/readme1st.html#Q15) ratios when the benchmarks are compiled with peak tuning.
   - **SPECfp_rate_base2006**: The geometric mean of seventeen normalized throughput ratios when the benchmarks are compiled with base tuning.
+
+
 
 ### Available Benchmark
 
