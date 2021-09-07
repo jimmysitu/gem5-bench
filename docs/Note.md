@@ -14,32 +14,50 @@ cd /mnt
 
 ### Build SPEC CPU2006
 
+Build only cmd,
+
+```bash
+runspec --action build --config <configure_file.cfg> <benchmark>
+```
 
 
-### Available Benchmark
+
+### Run SPEC CPU2006
+
+Run only cmd,
+
+```bash
+runspec --noreportable --nobuild --config <configure_file.cfg> <benchmark>
+```
+
+**--nobuild**: is added for prebuilt binaries should be used
+
+**--fake**: dry run
+
+### Metrics
 
 For CPU2006, SPEC has chosen to allow two types of compilation:
 
 - The **base** metrics (e.g. SPECint_base2006) are required for all reported results and have stricter guidelines for compilation. For example, the same flags must be used in the same order for all benchmarks of a given language. This is the point closer to those who might prefer a relatively simple build process.
-
 - The **peak** metrics (e.g. SPECint2006) are optional and have less strict requirements. For example, different compiler options may be used on each benchmark, and feedback-directed optimization is allowed. This point is closer to those who may be willing to invest more time and effort in development of build procedures.
 
-- The **SPECspeed metrics** (e.g., SPECint2006) are used for comparing the ability of a computer to complete single tasks.
-
-- The **SPECrate metrics** (e.g., SPECint_rate2006) measure the throughput or rate of a machine carrying out a number of tasks.
-
-  
+The **SPECspeed metrics** (e.g., SPECint2006) are used for comparing the ability of a computer to complete single tasks.
 
 - **SPECspeed metrics:**
   - **SPECint2006**: The geometric mean of twelve normalized ratios - one for each integer benchmark - when the benchmarks are compiled with [peak](https://www.spec.org/cpu2006/Docs/readme1st.html#Q14) tuning.
   - **SPECint_base2006**: The geometric mean of twelve normalized ratios when the benchmarks are compiled with [base](https://www.spec.org/cpu2006/Docs/readme1st.html#Q14) tuning.
   - **SPECfp2006**: The geometric mean of seventeen normalized ratios - one for each floating point benchmark - when compiled with [peak](https://www.spec.org/cpu2006/Docs/readme1st.html#Q14) tuning.
   - **SPECfp_base2006**: The geometric mean of seventeen normalized ratios when the benchmarks are compiled with [base](https://www.spec.org/cpu2006/Docs/readme1st.html#Q14) tuning.
+
+The **SPECrate metrics** (e.g., SPECint_rate2006) measure the throughput or rate of a machine carrying out a number of tasks.
+
 - **SPECrate metrics:**
   - **SPECint_rate2006**: The geometric mean of twelve normalized [throughput](https://www.spec.org/cpu2006/Docs/readme1st.html#Q15) ratios when the benchmarks are compiled with peak tuning.
   - **SPECint_rate_base2006**: The geometric mean of twelve normalized throughput ratios when the benchmarks are compiled with base tuning.
   - **SPECfp_rate2006**: The geometric mean of seventeen normalized [throughput](https://www.spec.org/cpu2006/Docs/readme1st.html#Q15) ratios when the benchmarks are compiled with peak tuning.
   - **SPECfp_rate_base2006**: The geometric mean of seventeen normalized throughput ratios when the benchmarks are compiled with base tuning.
+
+### Available Benchmark
 
 #### CINT2006
 
