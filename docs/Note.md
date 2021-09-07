@@ -20,6 +20,33 @@ Build only cmd,
 runspec --action build --config <configure_file.cfg> <benchmark>
 ```
 
+#### Tips: Get Final Run Command
+
+After build and setup SPEC CPU2006 enviroment, one can get the final command with `specinvoke`. This command is useful when build and run are on different machines (e.g x86 and gem5)
+
+For example,
+
+```bash
+go 400.perlbench run; #Go to run dir
+specinvoke -n
+```
+
+And return,
+
+```bash
+# specinvoke r6392
+#  Invoked as: specinvoke -n
+# timer ticks over every 1000 ns
+# Use another -n on the command line to see chdir commands and env dump
+# Starting run for copy #0
+../run_base_ref_gem5-x86.0000/perlbench_base.gem5-x86 -I./lib checkspam.pl 2500 5 25 11 150 1 1 1 1 > checkspam.2500.5.25.11.150.1.1.1.1.out 2>> checkspam.2500.5.25.11.150.1.1.1.1.err
+# Starting run for copy #0
+../run_base_ref_gem5-x86.0000/perlbench_base.gem5-x86 -I./lib diffmail.pl 4 800 10 17 19 300 > diffmail.4.800.10.17.19.300.out 2>> diffmail.4.800.10.17.19.300.err
+# Starting run for copy #0
+../run_base_ref_gem5-x86.0000/perlbench_base.gem5-x86 -I./lib splitmail.pl 1600 12 26 16 4500 > splitmail.1600.12.26.16.4500.out 2>> splitmail.1600.12.26.16.4500.err
+16 4500 > spl5
+```
+
 
 
 ### Run SPEC CPU2006
