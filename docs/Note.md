@@ -60,9 +60,11 @@ And return,
 ../run_base_ref_gem5-x86.0000/perlbench_base.gem5-x86 -I./lib splitmail.pl 1600 12 26 16 4500 > splitmail.1600.12.26.16.4500.out 2>> splitmail.1600.12.26.16.4500.err
 ```
 
+### Clean Build/Run Directories
 
-
-### 
+```bash
+runspec --atction clean -c <cfg_file> <benchmark>
+```
 
 
 
@@ -131,5 +133,7 @@ The **SPECrate metrics** (e.g., SPECint_rate2006) measure the throughput or rate
 | [470.lbm](http://www.spec.org/auto/cpu2006/Docs/470.lbm.html) | C         | Fluid Dynamics                   |
 | [481.wrf](http://www.spec.org/auto/cpu2006/Docs/481.wrf.html) | C/Fortran | Weather Prediction               |
 | [482.sphinx3](http://www.spec.org/auto/cpu2006/Docs/482.sphinx3.html) | C         | Speech recognition               |
+
+
 
 ## Running SPEC CPU2017
