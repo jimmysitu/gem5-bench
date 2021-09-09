@@ -45,7 +45,7 @@ go 400.perlbench run; #Go to run dir
 specinvoke -n
 ```
 
-And return,
+Which returns,
 
 ```bash
 # specinvoke r6392
@@ -59,10 +59,6 @@ And return,
 # Starting run for copy #0
 ../run_base_ref_gem5-x86.0000/perlbench_base.gem5-x86 -I./lib splitmail.pl 1600 12 26 16 4500 > splitmail.1600.12.26.16.4500.out 2>> splitmail.1600.12.26.16.4500.err
 ```
-
-
-
-### 
 
 
 
