@@ -66,8 +66,6 @@ And return,
 runspec --atction clean -c <cfg_file> <benchmark>
 ```
 
-
-
 ### Metrics
 
 For CPU2006, SPEC has chosen to allow two types of compilation:
@@ -137,3 +135,27 @@ The **SPECrate metrics** (e.g., SPECint_rate2006) measure the throughput or rate
 
 
 ## Running SPEC CPU2017
+
+The former runspec utility is renamed runcpu in SPEC CPU 2017.  [[Why?](https://www.spec.org/cpu2017/Docs/runspec.html)]
+
+### Install SPEC CPU2017
+
+Mount the ISO file and install SPEC CPU2006 with
+
+```bash
+sudo mount -t iso9660 -o ro,exec,loop <path_to_spec_iso> /mnt
+cd /mnt
+./install.sh -d <path_to_install>
+```
+
+### Build SPEC CPU2017
+
+Build only cmd,
+
+```bash
+runcpu --action build --config <cfg_file> <benchmark>
+```
+
+`runcpu` build action will change cfg file, so it is better to copy a new cfg file for each build.
+
+### Run SPEC CPU2017
