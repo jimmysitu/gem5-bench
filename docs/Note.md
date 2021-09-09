@@ -1,4 +1,4 @@
-# gem5-bench Notes
+
 
 ## Running SPEC CPU2006
 
@@ -156,6 +156,12 @@ Build only cmd,
 runcpu --action build --config <cfg_file> <benchmark>
 ```
 
+**--define build_ncpus=`` `nproc` ``**, parallel build with n CPUs
+
+**--define gcc_dir="/usr"**, set gcc tool set directory
+
 `runcpu` build action will change cfg file, so it is better to copy a new cfg file for each build.
+
+
 
 ### Run SPEC CPU2017
