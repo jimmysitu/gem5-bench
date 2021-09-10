@@ -67,13 +67,6 @@ from common.FileSystemConfig import config_filesystem
 from common.Caches import *
 from cpu2006 import *
 
-# Check if KVM support has been enabled, we might need to do VM
-# configuration if that's the case.
-have_kvm_support = 'BaseKvmCPU' in globals()
-def is_kvm_cpu(cpu_class):
-    return have_kvm_support and cpu_class != None and \
-        issubclass(cpu_class, BaseKvmCPU)
-
 def get_processes(options):
     """Interprets provided options and returns a list of processes"""
 
@@ -156,9 +149,13 @@ if options.bench:
 
     for app in apps:
         try:
-            exec("workload = %s(buildEnv['TARGET_ISA'], 'linux', '%s', '%s')" % (
-                        app, 'ref', options.spec_workload))
-            args = {'cwd': options.spec_cwd}
+            if buildEnv['TARGET_ISA'] == 'arm':
+                exec("workload = %s('arm_%s', 'linux', '%s')" % (
+                        app, options.arm_iset, options.spec_input))
+            else:
+                exec("workload = %s(buildEnv['TARGET_ISA'], 'linux', '%s', '%s')" % (
+                    app, 'ref', options.spec_workload))
+                args = {'cwd': options.spec_cwd}
             multiprocesses.append(workload.makeProcess(**args))
         except:
             print("Unable to find workload for %s: %s" %
@@ -180,10 +177,12 @@ if options.smt and options.num_cpus > 1:
     fatal("You cannot use SMT with multiple CPUs!")
 
 np = options.num_cpus
+mp0_path = multiprocesses[0].executable
 system = System(cpu = [CPUClass(cpu_id=i) for i in range(np)],
                 mem_mode = test_mem_mode,
                 mem_ranges = [AddrRange(options.mem_size)],
-                cache_line_size = options.cacheline_size)
+                cache_line_size = options.cacheline_size,
+                workload = SEWorkload.init_compatible(mp0_path))
 
 if numThreads > 1:
     system.multi_thread = True
@@ -213,7 +212,7 @@ if options.elastic_trace_en:
 for cpu in system.cpu:
     cpu.clk_domain = system.cpu_clk_domain
 
-if is_kvm_cpu(CPUClass) or is_kvm_cpu(FutureClass):
+if ObjectList.is_kvm_cpu(CPUClass) or ObjectList.is_kvm_cpu(FutureClass):
     if buildEnv['TARGET_ISA'] == 'x86':
         system.kvm_vm = KvmVM()
         for process in multiprocesses:
