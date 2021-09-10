@@ -165,3 +165,50 @@ runcpu --action build --config <cfg_file> <benchmark>
 
 
 ### Run SPEC CPU2017
+
+
+
+### Available Benchmark
+
+SPEC CPU 2017 has 43 benchmarks, organized into 4 suites:
+
+```text
+ SPECrate 2017 Integer            SPECspeed 2017 Integer
+ SPECrate 2017 Floating Point     SPECspeed 2017 Floating Point
+```
+
+Benchmark pairs shown as:
+
+```text
+ 5nn.benchmark_r / 6nn.benchmark_s
+```
+
+|                    SPECrate®2017 Integer                     |                    SPECspeed®2017 Integer                    | Language[[1\]](https://www.spec.org/cpu2017/Docs/index.html#linkNote) | KLOC[[2\]](https://www.spec.org/cpu2017/Docs/index.html#klocNote) | Application Area                                             |
+| :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | -----------------------------------------------------------: | :----------------------------------------------------------- |
+| [500.perlbench_r](https://www.spec.org/cpu2017/Docs/benchmarks/500.perlbench_r.html) | [600.perlbench_s](https://www.spec.org/cpu2017/Docs/benchmarks/600.perlbench_s.html) |                              C                               |                                                          362 | Perl interpreter                                             |
+| [502.gcc_r](https://www.spec.org/cpu2017/Docs/benchmarks/502.gcc_r.html) | [602.gcc_s](https://www.spec.org/cpu2017/Docs/benchmarks/602.gcc_s.html) |                              C                               |                                                        1,304 | GNU C compiler                                               |
+| [505.mcf_r](https://www.spec.org/cpu2017/Docs/benchmarks/505.mcf_r.html) | [605.mcf_s](https://www.spec.org/cpu2017/Docs/benchmarks/605.mcf_s.html) |                              C                               |                                                            3 | Route planning                                               |
+| [520.omnetpp_r](https://www.spec.org/cpu2017/Docs/benchmarks/520.omnetpp_r.html) | [620.omnetpp_s](https://www.spec.org/cpu2017/Docs/benchmarks/620.omnetpp_s.html) |                             C++                              |                                                          134 | Discrete Event simulation - computer network                 |
+| [523.xalancbmk_r](https://www.spec.org/cpu2017/Docs/benchmarks/523.xalancbmk_r.html) | [623.xalancbmk_s](https://www.spec.org/cpu2017/Docs/benchmarks/623.xalancbmk_s.html) |                             C++                              |                                                          520 | XML to HTML conversion via XSLT                              |
+| [525.x264_r](https://www.spec.org/cpu2017/Docs/benchmarks/525.x264_r.html) | [625.x264_s](https://www.spec.org/cpu2017/Docs/benchmarks/625.x264_s.html) |                              C                               |                                                           96 | Video compression                                            |
+| [531.deepsjeng_r](https://www.spec.org/cpu2017/Docs/benchmarks/531.deepsjeng_r.html) | [631.deepsjeng_s](https://www.spec.org/cpu2017/Docs/benchmarks/631.deepsjeng_s.html) |                             C++                              |                                                           10 | Artificial Intelligence: alpha-beta tree search (Chess)      |
+| [541.leela_r](https://www.spec.org/cpu2017/Docs/benchmarks/541.leela_r.html) | [641.leela_s](https://www.spec.org/cpu2017/Docs/benchmarks/641.leela_s.html) |                             C++                              |                                                           21 | Artificial Intelligence: Monte Carlo tree search (Go)        |
+| [548.exchange2_r](https://www.spec.org/cpu2017/Docs/benchmarks/548.exchange2_r.html) | [648.exchange2_s](https://www.spec.org/cpu2017/Docs/benchmarks/648.exchange2_s.html) |                           Fortran                            |                                                            1 | Artificial Intelligence: recursive solution generator (Sudoku) |
+| [557.xz_r](https://www.spec.org/cpu2017/Docs/benchmarks/557.xz_r.html) | [657.xz_s](https://www.spec.org/cpu2017/Docs/benchmarks/657.xz_s.html) |                              C                               |                                                           33 | General data compression                                     |
+
+|                 SPECrate®2017 Floating Point                 |                SPECspeed®2017 Floating Point                 | Language[[1\]](https://www.spec.org/cpu2017/Docs/index.html#linkNote) | KLOC[[2\]](https://www.spec.org/cpu2017/Docs/index.html#klocNote) | Application Area                                            |
+| :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | -----------------------------------------------------------: | :---------------------------------------------------------- |
+| [503.bwaves_r](https://www.spec.org/cpu2017/Docs/benchmarks/503.bwaves_r.html) | [603.bwaves_s](https://www.spec.org/cpu2017/Docs/benchmarks/603.bwaves_s.html) |                           Fortran                            |                                                            1 | Explosion modeling                                          |
+| [507.cactuBSSN_r](https://www.spec.org/cpu2017/Docs/benchmarks/507.cactuBSSN_r.html) | [607.cactuBSSN_s](https://www.spec.org/cpu2017/Docs/benchmarks/607.cactuBSSN_s.html) |                       C++, C, Fortran                        |                                                          257 | Physics: relativity                                         |
+| [508.namd_r](https://www.spec.org/cpu2017/Docs/benchmarks/508.namd_r.html) |                                                              |                             C++                              |                                                            8 | Molecular dynamics                                          |
+| [510.parest_r](https://www.spec.org/cpu2017/Docs/benchmarks/510.parest_r.html) |                                                              |                             C++                              |                                                          427 | Biomedical imaging: optical tomography with finite elements |
+| [511.povray_r](https://www.spec.org/cpu2017/Docs/benchmarks/511.povray_r.html) |                                                              |                            C++, C                            |                                                          170 | Ray tracing                                                 |
+| [519.lbm_r](https://www.spec.org/cpu2017/Docs/benchmarks/519.lbm_r.html) | [619.lbm_s](https://www.spec.org/cpu2017/Docs/benchmarks/619.lbm_s.html) |                              C                               |                                                            1 | Fluid dynamics                                              |
+| [521.wrf_r](https://www.spec.org/cpu2017/Docs/benchmarks/521.wrf_r.html) | [621.wrf_s](https://www.spec.org/cpu2017/Docs/benchmarks/621.wrf_s.html) |                          Fortran, C                          |                                                          991 | Weather forecasting                                         |
+| [526.blender_r](https://www.spec.org/cpu2017/Docs/benchmarks/526.blender_r.html) |                                                              |                            C++, C                            |                                                        1,577 | 3D rendering and animation                                  |
+| [527.cam4_r](https://www.spec.org/cpu2017/Docs/benchmarks/527.cam4_r.html) | [627.cam4_s](https://www.spec.org/cpu2017/Docs/benchmarks/627.cam4_s.html) |                          Fortran, C                          |                                                          407 | Atmosphere modeling                                         |
+|                                                              | [628.pop2_s](https://www.spec.org/cpu2017/Docs/benchmarks/628.pop2_s.html) |                          Fortran, C                          |                                                          338 | Wide-scale ocean modeling (climate level)                   |
+| [538.imagick_r](https://www.spec.org/cpu2017/Docs/benchmarks/538.imagick_r.html) | [638.imagick_s](https://www.spec.org/cpu2017/Docs/benchmarks/638.imagick_s.html) |                              C                               |                                                          259 | Image manipulation                                          |
+| [544.nab_r](https://www.spec.org/cpu2017/Docs/benchmarks/544.nab_r.html) | [644.nab_s](https://www.spec.org/cpu2017/Docs/benchmarks/644.nab_s.html) |                              C                               |                                                           24 | Molecular dynamics                                          |
+| [549.fotonik3d_r](https://www.spec.org/cpu2017/Docs/benchmarks/549.fotonik3d_r.html) | [649.fotonik3d_s](https://www.spec.org/cpu2017/Docs/benchmarks/649.fotonik3d_s.html) |                           Fortran                            |                                                           14 | Computational Electromagnetics                              |
+| [554.roms_r](https://www.spec.org/cpu2017/Docs/benchmarks/554.roms_r.html) | [654.roms_s](https://www.spec.org/cpu2017/Docs/benchmarks/654.roms_s.html) |                           Fortran                            |                                                          210 | Regional ocean modeling                                     |
