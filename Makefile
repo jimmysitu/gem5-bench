@@ -37,10 +37,10 @@ ifndef WRKLD
 endif
 
 list-wrkld:
-	python2 configs/cpu2006.py --list | grep workloads
+	python3 configs/cpu2006.py --list | grep workloads
 
 gen-spec2006-cmd:
-	python2 configs/cpu2006.py --generate
+	python3 configs/cpu2006.py --generate
 
 # Build SPEC2006 for gem5
 $(BUILD_SPECs): check-env

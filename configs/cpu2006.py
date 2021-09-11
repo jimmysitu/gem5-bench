@@ -60,9 +60,9 @@ class Benchmark(object):
         try:
             func = getattr(self.__class__, size)
         except AttributeError:
-            raise AttributeError, \
-                  'The benchmark %s does not have the %s workload' % \
-                  (self.name, size)
+            raise AttributeError(
+                  'The benchmark %s does not have the %s workload' %
+                  (self.name, size))
 
         self.run_dir = joinpath(
                 spec_dist, 'benchspec', 'CPU2006', str(self.number) + '.' + self.name,
@@ -70,7 +70,7 @@ class Benchmark(object):
 
         full_binary = joinpath(self.run_dir, self.binary)
         if not isfile(full_binary):
-            raise AttributeError, '%s not found' % full_binary
+            raise AttributeError('%s not found' % full_binary)
         self.executable = self.binary
 
 
@@ -254,9 +254,9 @@ class gamess(DefaultBenchmark):
         self.inputs['ref'] = {}
         self.inputs['test'] = {}
 
-        self.inputs['ref']['cytosine'] = ['cytosine.2.config']
-        self.inputs['ref']['h2ocu2+'] = ['h2ocu2+.gradient.config']
-        self.inputs['ref']['triazolium'] = ['triazolium.config']
+        self.opts['ref']['cytosine'] = ['cytosine.2.config']
+        self.opts['ref']['h2ocu2+'] = ['h2ocu2+.gradient.config']
+        self.opts['ref']['triazolium'] = ['triazolium.config']
         DefaultBenchmark.__init__(self, isa, os, size, workload)
 
 class mcf(DefaultBenchmark):
