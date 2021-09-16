@@ -180,7 +180,7 @@ class perlbench(DefaultBenchmark):
                     '4', '800', '10', '17', '19', '300'
                     ]
         self.opts['ref']['splitmail'] = [
-                    '-I./lib splitmail.pl',
+                    '-I./lib', 'splitmail.pl',
                     '1600', '12', '26', '16', '4500'
                     ]
         DefaultBenchmark.__init__(self, isa, os, size, workload)
@@ -718,3 +718,5 @@ if __name__ == '__main__':
                         print('    /sbin/m5 writefile ' + ('.'.join([x.name, size, wrkld, 'err'])) + ' ' + ('.'.join([x.name, size, wrkld, 'simerr'])), file=f)
                         print('fi', file=f)
                     f.close()
+
+
