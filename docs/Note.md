@@ -1,6 +1,6 @@
 # gem5-bench Note
 
-## Running SPEC CPU2006
+## Running SPEC CPU2006 on Host
 
 ### Install SPEC CPU2006
 
@@ -134,7 +134,7 @@ The **SPECrate metrics** (e.g., SPECint_rate2006) measure the throughput or rate
 
 
 
-## Running SPEC CPU2017
+## Running SPEC CPU2017 on Host
 
 The former runspec utility is renamed runcpu in SPEC CPU 2017.  [[Why?](https://www.spec.org/cpu2017/Docs/runspec.html)]
 
@@ -166,6 +166,16 @@ runcpu --action build --config <cfg_file> <benchmark>
 
 ### Run SPEC CPU2017
 
+Run only cmd,
+
+```bash
+runcpu --noreportable --nobuild --config <cfg_file> <benchmark>
+```
+
+**--nobuild**: is added for prebuilt binaries should be used
+
+**--fake**: dry run
+
 
 
 ### Available Benchmark
@@ -183,6 +193,8 @@ Benchmark pairs shown as:
  5nn.benchmark_r / 6nn.benchmark_s
 ```
 
+#### SPECrate/speed 2017 Integer
+
 |                    SPECrate®2017 Integer                     |                    SPECspeed®2017 Integer                    | Language[[1\]](https://www.spec.org/cpu2017/Docs/index.html#linkNote) | KLOC[[2\]](https://www.spec.org/cpu2017/Docs/index.html#klocNote) | Application Area                                             |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | -----------------------------------------------------------: | :----------------------------------------------------------- |
 | [500.perlbench_r](https://www.spec.org/cpu2017/Docs/benchmarks/500.perlbench_r.html) | [600.perlbench_s](https://www.spec.org/cpu2017/Docs/benchmarks/600.perlbench_s.html) |                              C                               |                                                          362 | Perl interpreter                                             |
@@ -195,6 +207,8 @@ Benchmark pairs shown as:
 | [541.leela_r](https://www.spec.org/cpu2017/Docs/benchmarks/541.leela_r.html) | [641.leela_s](https://www.spec.org/cpu2017/Docs/benchmarks/641.leela_s.html) |                             C++                              |                                                           21 | Artificial Intelligence: Monte Carlo tree search (Go)        |
 | [548.exchange2_r](https://www.spec.org/cpu2017/Docs/benchmarks/548.exchange2_r.html) | [648.exchange2_s](https://www.spec.org/cpu2017/Docs/benchmarks/648.exchange2_s.html) |                           Fortran                            |                                                            1 | Artificial Intelligence: recursive solution generator (Sudoku) |
 | [557.xz_r](https://www.spec.org/cpu2017/Docs/benchmarks/557.xz_r.html) | [657.xz_s](https://www.spec.org/cpu2017/Docs/benchmarks/657.xz_s.html) |                              C                               |                                                           33 | General data compression                                     |
+
+#### SPECrate/speed 2017 Floating Point
 
 |                 SPECrate®2017 Floating Point                 |                SPECspeed®2017 Floating Point                 | Language[[1\]](https://www.spec.org/cpu2017/Docs/index.html#linkNote) | KLOC[[2\]](https://www.spec.org/cpu2017/Docs/index.html#klocNote) | Application Area                                            |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | -----------------------------------------------------------: | :---------------------------------------------------------- |

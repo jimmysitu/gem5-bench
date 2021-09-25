@@ -94,14 +94,17 @@ make $(benchname) ISA=$(ISA) WRKLD=$(WORKLOAD)
 ```
 
 ## Build Linux Kernel for gem5 Full System Mode
+
+Build Linux kernel, you can define you kernel in linux_configs/config-\<ISA>-<KERNEL_VERSION>
+```bash
+make build_kernel_X86
+```
+
 Install Ubuntu 16.04 to disk image for gem5 full system mode
 ```bash
 make build_img_x86
 ```
-Build Linux kernel, you can define you kernel in linux_configs/config-<ISA>.cfg
-```bash
-make build_kernel_x86
-```
+
 Install tools and benchmark to disk image
 ```bash
 make install_spec_x86
