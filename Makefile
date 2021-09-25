@@ -87,8 +87,7 @@ build_gem5_all: $(GEM5_TARGETs)
 	@echo "Build All Targets Done"
 
 
-# TODO: Long run for this simulation, slurm should be used
-# SE Mode
+# Run SPEC_CPU2006 in SE Mode
 BENCHs = perlbench bzip2 gcc bwaves gamess mcf milc zeusmp gromacs cactusADM leslie3d namd gobmk dealII soplex povray calculix hmmer sjeng GemsFDTD libquantum h264ref tonto lbm omnetpp astar wrf sphinx3 xalancbmk specrand_int specrand_fp
 
 $(BENCHs): check-isa check-wrkld
@@ -98,7 +97,7 @@ $(BENCHs): check-isa check-wrkld
 
 
 # Build linux kernel for gem5
-KERNEL_VERSION = 4.14.134
+KERNEL_VERSION ?= 4.14.134
 $(KERNEL_TARGETs):
 	cd linux; git checkout v$(KERNEL_VERSION)
 	cp linux_configs/config-$(subst build_kernel_,,$@)-$(KERNEL_VERSION) linux/.config
@@ -107,37 +106,20 @@ $(KERNEL_TARGETs):
 	@echo "$(@) $(KERNEL_VERSION) done"
 
 # Build Full System disk
-build_img_x86:
-	@echo "Automatic install ubuntu to ubuntu-1604.X86.img"
-ifeq (,$(wildcard ./ubuntu-1604.X86.img))
-	@echo "Create image file"
-	qemu-img create ubuntu-1604.X86.img 8G
-	cp linux_configs/preseed-X86.cfg preseed.cfg
-	sudo virt-install \
-		--connect qemu:///system \
-		--name gem5-ubuntu \
-		--ram 2048 \
-		--network network=default,model=virtio \
-		--disk path=${PWD}/ubuntu-1604.X86.img,size=8,bus=virtio,sparse=false,format=raw \
-		--location ubuntu-16.04.4-server-amd64.iso \
-		--initrd-inject=${PWD}/preseed.cfg \
-		--extra-args="locale=en_GB.UTF-8 console-setup/ask_detect=false keyboard-configuration/layoutcode=hu console=ttyS0 file=/preseed.cfg" \
-		--virt-type kvm \
-		--noreboot \
-		--nographics
-	sudo chown `whoami` ubuntu-1604.X86.img
-
-else
-	@echo "Image file ubuntu-1604.X86.img already exist, please remove it manually first"
-endif
+UBUNTU_VERSION ?= 18.04
+build_img_X86:
+	@echo "Building disk image with Ubuntu $(UBUNTU_VERSION)"
+	packer validate packer_configs/ubuntu-$(subst build_img_,,$@)-$(UBUNTU_VERSION).json
+	packer build packer_configs/ubuntu-$(subst build_img_,,$@)-$(UBUNTU_VERSION).json
 
 destroy_img_x86:
 	-virsh destroy gem5-ubuntu
 	-virsh undefine gem5-ubuntu --remove-all-storage
 
 # Run qemu to check kernel
-run_qemu_x86:
-	qemu-system-x86_64 -nographic -hda ubuntu-1604.X86.img \
+run_qemu_X86:
+	qemu-system-x86_64 -nographic \
+		-hda ubuntu-$(subst build_img_,,$@)-$(UBUNTU_VERSION).img \
 		-enable-kvm \
 		-m 2048 \
 		-kernel linux/arch/x86_64/boot/bzImage -append "root=/dev/hda1 console=ttyS0"
