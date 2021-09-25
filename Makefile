@@ -97,15 +97,18 @@ $(BENCHs): check-isa check-wrkld
 
 
 # Build linux kernel for gem5
+KERNEL_VERSION = 4.14.134
 $(KERNEL_TARGETs):
-	cp linux_configs/config-$(subst build_kernel_,,$@) linux/.config
+	cd linux; git checkout v$(KERNEL_VERSION)
+	cp linux_configs/config-$(subst build_kernel_,,$@)-$(KERNEL_VERSION) linux/.config
 	cd linux; make -j `nproc`
-	@echo "$(@) done"
+	cd linux; cp vmlinux vmlinux-$(subst build_kernel_,,$@)-$(KERNEL_VERSION)
+	@echo "$(@) $(KERNEL_VERSION) done"
 
 # Build Full System disk
 build_img_x86:
 	@echo "Automatic install ubuntu to ubuntu-1604.X86.img"
-ifeq (,$(wildcard ./ubuntu-1604.X86.img)) 
+ifeq (,$(wildcard ./ubuntu-1604.X86.img))
 	@echo "Create image file"
 	qemu-img create ubuntu-1604.X86.img 8G
 	cp linux_configs/preseed-X86.cfg preseed.cfg
