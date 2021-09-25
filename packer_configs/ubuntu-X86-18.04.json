@@ -1,0 +1,76 @@
+{
+    "_author": "Jimmy Situ <web@jimmystone.cn>",
+    "_license": "BSD 3-Clause",
+    "builders":
+    [
+        {
+            "type": "qemu",
+            "format": "raw",
+            "accelerator": "kvm",
+            "boot_command":
+            [
+                "{{ user `boot_command_prefix` }}",
+                "/install/vmlinuz noapic ",
+                "debian-installer={{ user `locale` }} auto locale={{ user `locale` }} kbd-chooser/method=us ",
+                "file=/floppy/{{ user `preseed` }} ",
+                "fb=false debconf/frontend=noninteractive ",
+                "hostname={{ user `hostname` }} ",
+                "initrd=/install/initrd.gz ",
+                "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+                "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+                "passwd/user-fullname={{ user `ssh_fullname` }} ",
+                "passwd/user-password={{ user `ssh_password` }} ",
+                "passwd/user-password-again={{ user `ssh_password` }} ",
+                "passwd/username={{ user `ssh_username` }} ",
+                "-- <enter>"
+            ],
+            "cpus": "{{ user `vm_cpus`}}",
+            "disk_size": "{{ user `image_size` }}",
+            "floppy_files":
+            [
+                "packer_configs/{{ user `preseed` }}"
+            ],
+            "headless": "{{ user `headless` }}",
+            "http_directory": "packer_configs",
+            "iso_checksum": "{{ user `iso_checksum_type` }}:{{ user `iso_checksum` }}",
+            "iso_urls": [ "{{ user `iso_url` }}" ],
+            "memory": "{{ user `vm_memory`}}",
+            "output_directory": "disk_images/{{ user `image_name` }}-img",
+            "qemuargs":
+            [
+                [ "-cpu", "host" ],
+                [ "-display", "none" ]
+            ],
+            "qemu_binary": "/usr/bin/qemu-system-x86_64",
+            "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
+            "ssh_password": "{{ user `ssh_password` }}",
+            "ssh_username": "{{ user `ssh_username` }}",
+            "ssh_wait_timeout": "60m",
+            "vm_name": "{{ user `image_name` }}.img"
+        }
+    ],
+    "provisioners":
+    [
+    ],
+    "variables":
+    {
+        "boot_command_prefix": "<esc><wait><esc><wait><enter><wait>",
+        "desktop": "false",
+        "image_size": "8192",
+        "headless": "true",
+        "iso_checksum": "d5bc5c59c24191bb45dd85fc6a420b34",
+        "iso_checksum_type": "md5",
+        "iso_name": "ubuntu-18.04.4-server-amd64.iso",
+        "iso_url": "disk_images/ubuntu-18.04.4-server-amd64.iso",
+        "locale": "en_US",
+        "preseed" : "preseed-X86.cfg",
+        "hostname": "gem5",
+        "ssh_fullname": "gem5",
+        "ssh_password": "gem5",
+        "ssh_username": "gem5",
+        "vm_cpus": "4",
+        "vm_memory": "8192",
+        "image_name": "ubuntu-X86-18.04"
+  }
+
+}
