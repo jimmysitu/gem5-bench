@@ -31,6 +31,7 @@ ifndef ISA
 	$(error ISA is undefined)
 endif
 
+WRKLD ?= ''
 check-wrkld:
 ifndef WRKLD
 	$(error WRKLD is undefined, try list-wrkld)
