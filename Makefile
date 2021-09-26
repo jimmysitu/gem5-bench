@@ -1,7 +1,4 @@
-# This makefile include most useful target of Gem5
-
-ISO_URL  = http://releases.ubuntu.com/xenial
-ISO_NAME = ubuntu-16.04.4-server-amd64.iso
+# This makefile include most useful target of gem5
 
 ISAs := X86 ARM RISCV
 exts := opt prof perf debug
@@ -13,6 +10,8 @@ CLEAN_SPECs = $(foreach ISA, $(ISAs), clean_spec2006_$(ISA))
 
 GEM5_TARGETs = $(foreach ISA, $(ISAs), $(foreach ext, $(exts),  gem5/build/$(ISA)/gem5.$(ext)))
 KERNEL_TARGETs = $(foreach ISA, $(ISAs), build_kernel_$(ISA))
+IMAGE_TARGETs = $(foreach ISA, $(ISAs), build_img_$(ISA))
+QEMU_TARGETs = $(foreach ISA, $(ISAs), run_qemu_$(ISA))
 
 
 .PHONY: get-iso check-env check-isa check-wrkld $(BUILD_SPECs) $(SETUP_SPECs) $(RUN_SPECs) $(CLEAN_SPECs)
@@ -97,32 +96,35 @@ $(BENCHs): check-isa check-wrkld
 
 
 # Build linux kernel for gem5
-KERNEL_VERSION ?= 4.14.134
+KERNEL_VERSION ?= 5.4.49
+$(KERNEL_TARGETs): ISA = $(subst build_kernel_,,$@)
 $(KERNEL_TARGETs):
 	cd linux; git checkout v$(KERNEL_VERSION)
-	cp linux_configs/config-$(subst build_kernel_,,$@)-$(KERNEL_VERSION) linux/.config
+	cp linux_configs/config-$(ISA)-$(KERNEL_VERSION) linux/.config
 	cd linux; make -j `nproc`
-	cd linux; cp vmlinux vmlinux-$(subst build_kernel_,,$@)-$(KERNEL_VERSION)
+	cd linux; cp vmlinux vmlinux-$(ISA)-$(KERNEL_VERSION)
 	@echo "$(@) $(KERNEL_VERSION) done"
 
 # Build Full System disk
 UBUNTU_VERSION ?= 18.04
-build_img_X86:
+$(IMAGE_TARGETs): ISA = $(subst build_img_,,$@)
+$(IMAGE_TARGETs):
 	@echo "Building disk image with Ubuntu $(UBUNTU_VERSION)"
-	packer validate packer_configs/ubuntu-$(subst build_img_,,$@)-$(UBUNTU_VERSION).json
-	packer build packer_configs/ubuntu-$(subst build_img_,,$@)-$(UBUNTU_VERSION).json
+	packer validate packer_configs/ubuntu-$(ISA)-$(UBUNTU_VERSION).json
+	packer build packer_configs/ubuntu-$(ISA)-$(UBUNTU_VERSION).json
 
-destroy_img_x86:
-	-virsh destroy gem5-ubuntu
-	-virsh undefine gem5-ubuntu --remove-all-storage
 
-# Run qemu to check kernel
+# Run qemu to check kernel, for -nographic mode, Ctrl+A X to exit qemu
+$(QEMU_TARGETs): ISA = $(subst run_qemu_,,$@)
 run_qemu_X86:
 	qemu-system-x86_64 -nographic \
-		-hda ubuntu-$(subst build_img_,,$@)-$(UBUNTU_VERSION).img \
+		-hda disk_images/ubuntu-$(ISA)-$(UBUNTU_VERSION)-img/ubuntu-$(ISA)-$(UBUNTU_VERSION).img \
 		-enable-kvm \
 		-m 2048 \
-		-kernel linux/arch/x86_64/boot/bzImage -append "root=/dev/hda1 console=ttyS0"
+		-kernel linux/arch/x86_64/boot/bzImage \
+		-append "root=/dev/hda1 console=ttyS0"
+# Uncompress kernel needs qemu version > 4.0
+		#-kernel linux/vmlinux-$(ISA)-$(KERNEL_VERSION) \
 
 run_gem5_x86:
 	./gem5/build/X86/gem5.opt configs/fs_run.py --script=$(CMD)
