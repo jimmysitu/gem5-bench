@@ -123,7 +123,7 @@ run_qemu_X86:
 		-m 2048 \
 		-kernel linux/arch/x86_64/boot/bzImage \
 		-append "root=/dev/hda1 console=ttyS0"
-# Uncompress kernel needs qemu version > 4.0
+# Uncompress kernel needs qemu version > 4.0, which is support ubuntu 20.04 and later
 		#-kernel linux/vmlinux-$(ISA)-$(KERNEL_VERSION) \
 
 run_gem5_x86:

@@ -24,6 +24,7 @@
                 "passwd/username={{ user `ssh_username` }} ",
                 "-- <enter>"
             ],
+            "boot_wait": "5s",
             "cpus": "{{ user `vm_cpus`}}",
             "disk_size": "{{ user `image_size` }}",
             "floppy_files":
