@@ -108,11 +108,10 @@ $(KERNEL_TARGETs):
 # Build Full System disk
 UBUNTU_VERSION ?= 18.04
 $(IMAGE_TARGETs): ISA = $(subst build_img_,,$@)
-$(IMAGE_TARGETs):
+$(IMAGE_TARGETs): $(build_util_$(ISA))
 	@echo "Building disk image with Ubuntu $(UBUNTU_VERSION)"
 	packer validate packer_configs/ubuntu-$(ISA)-$(UBUNTU_VERSION).json
-	packer build packer_configs/ubuntu-$(ISA)-$(UBUNTU_VERSION).json
-
+	PACKER_LOG=1 packer build packer_configs/ubuntu-$(ISA)-$(UBUNTU_VERSION).json
 
 # Run qemu to check kernel, for -nographic mode, Ctrl+A X to exit qemu
 $(QEMU_TARGETs): ISA = $(subst run_qemu_,,$@)
@@ -126,20 +125,30 @@ run_qemu_X86:
 # Uncompress kernel needs qemu version > 4.0, which is support ubuntu 20.04 and later
 		#-kernel linux/vmlinux-$(ISA)-$(KERNEL_VERSION) \
 
+run_qemu_ARM:
+	# TBD
+
+run_qemu_RISCV:
+	# TBD
+
+# Build util for full system
+build_util_X86:
+	cd gem5/util/m5; \
+		scons build/x86/out/m5
+
+build_util_ARM:
+	cd gem5/util/m5; \
+		scons CROSS_COMPILE=aarch64-linux-gnu- build/arm64/out/m5
+
+build_util_RISCV:
+	cd gem5/util/m5; \
+		scons CROSS_COMPILE=riscv64-linux-gnu- build/riscv/out/m5
+
 run_gem5_x86:
 	./gem5/build/X86/gem5.opt configs/fs_run.py --script=$(CMD)
 
 stats_gem5_x86:
 	./gem5/build/X86/gem5.opt configs/fs_run_stats.py --cpus=1 --script=$(CMD)
-
-# Build util for full system
-build_util_x86:
-	cd gem5/util/m5; \
-	make -f Makefile.x86 CC='gcc -no-pie'
-
-build_util_aarch64:
-	cd gem5/util/m5; \
-	make -f Makefile.aarch64
 
 # Install tools to full system disk
 install_tools_x86: build_util_x86

@@ -29,7 +29,7 @@
             "disk_size": "{{ user `image_size` }}",
             "floppy_files":
             [
-                "packer_configs/{{ user `preseed` }}"
+                "packer_configs/shared/{{ user `preseed` }}"
             ],
             "headless": "{{ user `headless` }}",
             "http_directory": "packer_configs",
@@ -52,6 +52,29 @@
     ],
     "provisioners":
     [
+        {
+            "type": "file",
+            "source": "packer_configs/boot-exit/exit.sh",
+            "destination": "/home/gem5/"
+        },
+        {
+            "type": "file",
+            "source": "gem5/util/m5/build/x86/out/m5",
+            "destination": "/home/gem5/"
+        },
+        {
+            "type": "file",
+            "source": "packer_configs/shared/serial-getty@.service",
+            "destination": "/home/gem5/"
+        },
+        {
+            "type": "shell",
+            "execute_command": "echo '{{ user `ssh_password` }}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+            "scripts":
+            [
+                "packer_configs/boot-exit/post-installation.sh"
+            ]
+        }
     ],
     "variables":
     {
