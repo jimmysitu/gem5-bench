@@ -97,19 +97,30 @@ make $(benchname) ISA=$(ISA) WRKLD=$(WORKLOAD)
 
 Build Linux kernel, you can define you kernel in linux_configs/config-\<ISA>-<KERNEL_VERSION>
 ```bash
-make build_kernel_X86
+make build_kernel_<ISA>
 ```
 
-Install Ubuntu 16.04 to disk image for gem5 full system mode
+## Build Disk Images
+
+### Build Boot Only Images
+
+Install Ubuntu to disk image for gem5 full system mode
+
 ```bash
-make build_img_x86
+make build_img_<ISA>
 ```
+
+### Build Disk Images with Benchmark Installed
 
 Install tools and benchmark to disk image
+
 ```bash
-make install_spec_x86
+make install_<BENCHMARK>_<ISA>
 ```
 If your host kernel is different from the guest, recompile of spec2006 may need. Try to recompile it on qemu
+
+### Test Disk Images on QEMU
+
 ```bash
 make run_qemu_x86
 ```
