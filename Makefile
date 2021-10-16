@@ -1,5 +1,7 @@
 # This makefile include most useful target of gem5
 
+DEBUG ?= 0
+
 ISAs := X86 ARM RISCV
 exts := opt prof perf debug
 
@@ -12,6 +14,8 @@ GEM5_TARGETs = $(foreach ISA, $(ISAs), $(foreach ext, $(exts),  gem5/build/$(ISA
 KERNEL_TARGETs = $(foreach ISA, $(ISAs), build_kernel_$(ISA))
 IMAGE_TARGETs = $(foreach ISA, $(ISAs), build_img_$(ISA))
 QEMU_TARGETs = $(foreach ISA, $(ISAs), run_qemu_$(ISA))
+MOUNT_TARGETs = $(foreach ISA, $(ISAs), mount_img_$(ISA))
+UMOUNT_TARGETs = $(foreach ISA, $(ISAs), umount_img_$(ISA))
 
 
 .PHONY: get-iso check-env check-isa check-wrkld $(BUILD_SPECs) $(SETUP_SPECs) $(RUN_SPECs) $(CLEAN_SPECs)
@@ -31,6 +35,7 @@ ifndef ISA
 endif
 
 WRKLD ?= ''
+BENCHMARK ?=
 check-wrkld:
 ifndef WRKLD
 	$(error WRKLD is undefined, try list-wrkld)
@@ -105,31 +110,56 @@ $(KERNEL_TARGETs):
 	cd linux; cp vmlinux vmlinux-$(ISA)-$(KERNEL_VERSION)
 	@echo "$(@) $(KERNEL_VERSION) done"
 
+empty :=
+space :=$(empty) $(empty)
 # Build Full System disk
+ifeq ($(DEBUG), 1)
+# Let packer output debug log
+export PACKER_LOG=1
+endif
 UBUNTU_VERSION ?= 18.04
 $(IMAGE_TARGETs): ISA = $(subst build_img_,,$@)
+$(IMAGE_TARGETs): IMG_SUFFIX = $(subst $(space),-,$(strip $(ISA) $(UBUNTU_VERSION) $(BENCHMARK)))
 $(IMAGE_TARGETs): $(build_util_$(ISA))
-	@echo "Building disk image with Ubuntu $(UBUNTU_VERSION)"
-	packer validate packer_configs/ubuntu-$(ISA)-$(UBUNTU_VERSION).json
-	PACKER_LOG=1 packer build packer_configs/ubuntu-$(ISA)-$(UBUNTU_VERSION).json
+	@echo "Building disk image with Ubuntu $(UBUNTU_VERSION) $(ISA) $(BENCHMARK)"
+	packer validate packer_configs/ubuntu-$(IMG_SUFFIX).json
+	packer build packer_configs/ubuntu-$(IMG_SUFFIX).json |& tee packer.log
+
 
 # Run qemu to check kernel, for -nographic mode, Ctrl+A X to exit qemu
 $(QEMU_TARGETs): ISA = $(subst run_qemu_,,$@)
+$(QEMU_TARGETs): IMG_SUFFIX = $(subst $(space),-,$(strip $(ISA) $(UBUNTU_VERSION) $(BENCHMARK)))
 run_qemu_X86:
 	qemu-system-x86_64 -nographic \
-		-hda disk_images/ubuntu-$(ISA)-$(UBUNTU_VERSION)-img/ubuntu-$(ISA)-$(UBUNTU_VERSION).img \
+		-hda disk_images/ubuntu-$(IMG_SUFFIX)-img/ubuntu-$(IMG_SUFFIX).img \
 		-enable-kvm \
-		-m 2048 \
+		-m 4096 \
 		-kernel linux/arch/x86_64/boot/bzImage \
 		-append "root=/dev/hda1 console=ttyS0"
 # Uncompress kernel needs qemu version > 4.0, which is support ubuntu 20.04 and later
-		#-kernel linux/vmlinux-$(ISA)-$(KERNEL_VERSION) \
+		#-kernel linux/vmlinux-$(ISA)-$(KERNEL_VERSION)
 
+# TODO: Not test yet
 run_qemu_ARM:
-	# TBD
+	qemu-system-aarch64 -nographic \
+		-hda disk_images/ubuntu-$(IMG_SUFFIX)-img/ubuntu-$(IMG_SUFFIX).img \
+		-enable-kvm \
+		-m 4096 \
+		-kernel linux/arch/arm64/boot/bzImage \
+		-append "root=/dev/hda1 console=ttyS0"
+# Uncompress kernel needs qemu version > 4.0, which is support ubuntu 20.04 and later
+		#-kernel linux/vmlinux-$(ISA)-$(KERNEL_VERSION)
 
+# TODO: Not test yet
 run_qemu_RISCV:
-	# TBD
+	qemu-system-riscv -nographic \
+		-hda disk_images/ubuntu-$(ISA)-$(UBUNTU_VERSION)-img/ubuntu-$(ISA)-$(UBUNTU_VERSION).img \
+		-enable-kvm \
+		-m 4096 \
+		-kernel linux/arch/riscv/boot/bzImage \
+		-append "root=/dev/hda1 console=ttyS0"
+# Uncompress kernel needs qemu version > 4.0, which is support ubuntu 20.04 and later
+		#-kernel linux/vmlinux-$(ISA)-$(KERNEL_VERSION) \
 
 # Build util for full system
 build_util_X86:
@@ -144,55 +174,28 @@ build_util_RISCV:
 	cd gem5/util/m5; \
 		scons CROSS_COMPILE=riscv64-linux-gnu- build/riscv/out/m5
 
-run_gem5_x86:
+run_gem5_X86:
 	./gem5/build/X86/gem5.opt configs/fs_run.py --script=$(CMD)
 
 stats_gem5_x86:
 	./gem5/build/X86/gem5.opt configs/fs_run_stats.py --cpus=1 --script=$(CMD)
 
-# Install tools to full system disk
-install_tools_x86: build_util_x86
-	./m5tools/render_gem5init.py
-	chmod +x ./m5tools/gem5init
-	sudo kpartx -av ubuntu-1604.X86.img
-	@sleep 1
-	sudo mount /dev/mapper/loop0p1 /mnt
-	sudo cp gem5/util/m5/m5 /mnt/sbin/.
-	sudo cp m5tools/gem5init /mnt/sbin/.
-	sudo cp m5tools/gem5.service /mnt/lib/systemd/system/.
-	-cd /mnt/etc/systemd/system/default.target.wants; \
-		sudo ln -s /lib/systemd/system/gem5.service
-	-sudo rm /mnt/home/gem5/gem5init.log
-	sudo umount /mnt
-	sudo kpartx -dv ubuntu-1604.X86.img
-
-install_spec_x86: install_tools_x86 setup_spec2006_X86 gen-spec2006-cmd
-	make clean_spec2006_X86
-	sudo kpartx -av ubuntu-1604.X86.img
-	@sleep 1
-	sudo mount /dev/mapper/loop0p1 /mnt
-	sudo cp --parents -r ${M5_CPU2006} /mnt/.
-	sudo chown 1010 /mnt/$(M5_CPU2006) -R
-	sudo chgrp 1010 /mnt/$(M5_CPU2006) -R
-	sudo cp Makefile /mnt/home/gem5/.
-	sudo cp -r spec2006_configs /mnt/home/gem5/.
-	sudo cp -r m5tools /mnt/home/gem5/.
-	sudo chown 1010 /mnt/home/gem5/* -R
-	sudo chgrp 1010 /mnt/home/gem5/* -R
-	sudo umount /mnt
-	sudo kpartx -dv ubuntu-1604.X86.img
-	@echo "SPEC2006 installed to image"
-	@echo "Recompile may need if guest kernel is different from host"
 
 # Debug commands
-mount_img_x86:
-	sudo kpartx -av ubuntu-1604.X86.img
+$(MOUNT_TARGETs): ISA = $(subst mount_img_,,$@)
+$(MOUNT_TARGETs): IMG_SUFFIX = $(subst $(space),-,$(strip $(ISA) $(UBUNTU_VERSION) $(BENCHMARK)))
+$(MOUNT_TARGETs):
+	sudo kpartx -av \
+		disk_images/ubuntu-$(IMG_SUFFIX)-img/ubuntu-$(IMG_SUFFIX).img
 	@sleep 1
 	sudo mount /dev/mapper/loop0p1 /mnt
 
-umount_img_x86:
+$(UMOUNT_TARGETs): ISA = $(subst umount_img_,,$@)
+$(UMOUNT_TARGETs): IMG_SUFFIX = $(subst $(space),-,$(strip $(ISA) $(UBUNTU_VERSION) $(BENCHMARK)))
+$(UMOUNT_TARGETs):
 	sudo umount /mnt
-	sudo kpartx -dv ubuntu-1604.X86.img
+	sudo kpartx -dv \
+		disk_images/ubuntu-$(IMG_SUFFIX)-img/ubuntu-$(IMG_SUFFIX).img
 
 term:
 	./gem5/util/term/m5term localhost 3456

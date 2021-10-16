@@ -100,6 +100,8 @@ Build Linux kernel, you can define you kernel in linux_configs/config-\<ISA>-<KE
 make build_kernel_<ISA>
 ```
 
+
+
 ## Build Disk Images
 
 ### Build Boot Only Images
@@ -112,27 +114,21 @@ make build_img_<ISA>
 
 ### Build Disk Images with Benchmark Installed
 
-Install tools and benchmark to disk image
+Install Ubuntu and benchmark to disk image for gem5 full system mode
 
 ```bash
-make install_<BENCHMARK>_<ISA>
+make build_img_<ISA> BENCHMARK=<benchmark_name>
 ```
-If your host kernel is different from the guest, recompile of spec2006 may need. Try to recompile it on qemu
+<benchmark_name> could be *cpu2006*, *cpu2017*
 
 ### Test Disk Images on QEMU
 
+Test and check if disk images works with QEMU
+
 ```bash
-make run_qemu_x86
+make run_qemu_x86 [BENCHMARK=<benchmark_name]
 ```
-Once logined, compile the benchmark with this command
-```bash
-export M5_CPU2006=<path_to_CPU2006>
-make setup_spec2006_X86
-```
-Try run benchmark on qemu, and make sure benchmark exists without error
-```bash
-sh ./m5tools/400.xxxxxx.sh
-```
+
 
 ## Run Benchmark on gem5 with Full System Mode
 
@@ -140,6 +136,22 @@ sh ./m5tools/400.xxxxxx.sh
 make run_gem5_x86 CMD=./m5tools/<benchmark>.sh
 ```
 Log of benchmark will be wrote to ./m5out/*.out
+
+
+
+## Mount and Modify Disk Images
+
+In case disk image need to be modified, use commands below
+
+```bash
+sudo kpartx -av <disk_image>
+sudo mount /dev/mapper/loop0p1 /mnt
+[Do you modification under /mnt]
+sudo umount /mnt
+sudo kpartx -dv <disk_image>
+```
+
+
 
 ## TODO
 - Add McPAT flow for power analysis
