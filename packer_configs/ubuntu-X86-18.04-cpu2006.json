@@ -52,29 +52,6 @@
     ],
     "provisioners":
     [
-        {
-            "type": "file",
-            "source": "packer_configs/boot-exit/exit.sh",
-            "destination": "/home/gem5/"
-        },
-        {
-            "type": "file",
-            "source": "gem5/util/m5/build/x86/out/m5",
-            "destination": "/home/gem5/"
-        },
-        {
-            "type": "file",
-            "source": "packer_configs/shared/serial-getty@.service",
-            "destination": "/home/gem5/"
-        },
-        {
-            "type": "shell",
-            "execute_command": "echo '{{ user `ssh_password` }}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
-            "scripts":
-            [
-                "packer_configs/boot-exit/post-installation.sh"
-            ]
-        }
     ],
     "variables":
     {
@@ -94,7 +71,7 @@
         "ssh_username": "gem5",
         "vm_cpus": "4",
         "vm_memory": "8192",
-        "image_name": "ubuntu-X86-18.04"
+        "image_name": "ubuntu-X86-18.04-cpu2006"
   }
 
 }
